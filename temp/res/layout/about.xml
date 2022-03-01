@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:id="@id/help_container" android:paddingLeft="5.0dip" android:paddingRight="5.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <com.evancharlton.mileage.views.DividerView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/divider_about_app" />
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_app" />
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_author" />fill_parent
+<TextView android:autoLink="all" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_contact" />
+        <TextView android:autoLink="all" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_website" />
+        <com.evancharlton.mileage.views.DividerView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/divider_about_graphics" />
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_clutchpad" />
+        <Button android:id="@id/clutchpad" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_clutchpad_btn" android:onClick="onClick" />
+        <TextView android:autoLink="all" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_clutchpad_website" />
+        <com.evancharlton.mileage.views.DividerView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/divider_about_charts" />
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_charts" />
+        <Button android:id="@id/aicharts" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_charts_btn" android:onClick="onClick" />
+        <TextView android:autoLink="all" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_charts_website" />
+        <com.evancharlton.mileage.views.DividerView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/divider_about_translators" />
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/about_translators" />
+    </LinearLayout>
+</ScrollView>

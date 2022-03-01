@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:id="@id/container" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:mileage="http://schemas.android.com/apk/res/com.evancharlton.mileage">
+    <com.evancharlton.mileage.views.CursorSpinner android:id="@id/vehicle" android:layout_width="fill_parent" android:layout_height="wrap_content" mileage:uri="vehicles" mileage:display_field="title" />
+    <ListView android:id="@android:id/list" android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0" />
+    <LinearLayout android:id="@id/progress_container" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <ProgressBar android:id="@id/progress" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" style="?android:attr/progressBarStyleHorizontal" />
+        <ImageView android:id="@id/cancel" android:focusable="true" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:src="@drawable/ic_menu_cancel" />
+    </LinearLayout>
+</LinearLayout>

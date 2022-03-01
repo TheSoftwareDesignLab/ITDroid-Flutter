@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme" parent="@android:style/Theme" />
+    <style name="StatisticText">
+        <item name="android:textAppearance">?android:textAppearanceLarge</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">10.0dip</item>
+    </style>
+    <style name="LabelText">
+        <item name="android:textAppearance">?android:textAppearanceLarge</item>
+        <item name="android:textColor">#ff898989</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">5.0dip</item>
+    </style>
+    <style name="SeparatorText">
+        <item name="android:textSize">8.0pt</item>
+        <item name="android:textColor">#ff000000</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">#ff999999</item>
+        <item name="android:paddingLeft">5.0dip</item>
+    </style>
+</resources>

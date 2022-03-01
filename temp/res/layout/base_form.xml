@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:mileage="http://schemas.android.com/apk/res/com.evancharlton.mileage">
+    <ScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0">
+        <LinearLayout android:orientation="vertical" android:id="@id/contents" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    </ScrollView>
+    <Button android:id="@id/save_btn" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/add" />
+</LinearLayout>

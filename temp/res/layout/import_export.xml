@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:id="@id/contents" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/import_export_text" />
+        <Button android:id="@id/import_button" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/import_data" />
+        <Button android:id="@id/export_button" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/export_data" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference android:title="@string/settings_location" android:key="location_data" android:defaultValue="true" android:summaryOn="@string/settings_location_on" android:summaryOff="@string/settings_location_off" />
+    <ListPreference android:entries="@array/data_formats" android:title="@string/settings_data_format_title" android:key="data_format" android:summary="@string/settings_data_format_summary" android:defaultValue="0" android:entryValues="@array/data_format_values" />
+    <CheckBoxPreference android:title="@string/settings_auto_backup_title" android:key="auto_backup" android:defaultValue="true" android:summaryOn="@string/settings_auto_backup_on" android:summaryOff="@string/settings_auto_backup_off" />
+    <PreferenceCategory android:title="@string/settings" android:orderingFromXml="true" android:key="units_header">
+        <Preference android:title="@string/settings_units" android:key="units" android:summary="@string/settings_units_summary" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_notification_title" android:key="notifications">
+        <CheckBoxPreference android:title="@string/settings_interval_enabled_title" android:key="interval_notification_enabled" android:defaultValue="true" android:summaryOn="@string/settings_interval_enabled_on" android:summaryOff="@string/settings_interval_enabled_off" />
+        <RingtonePreference android:layout="?android:preferenceLayoutChild" android:title="@string/settings_interval_sound" android:key="interval_notification_ringtone" android:dependency="interval_notification_enabled" android:defaultValue="content://settings/system/notification_sound" android:ringtoneType="notification" />
+        <CheckBoxPreference android:title="@string/settings_interval_led" android:key="interval_notification_led" android:dependency="interval_notification_enabled" android:defaultValue="true" android:summaryOn="@string/settings_interval_led_on" android:summaryOff="@string/settings_interval_led_off" />
+        <CheckBoxPreference android:title="@string/settings_interval_vibrate" android:key="interval_notification_vibrate" android:dependency="interval_notification_enabled" android:defaultValue="true" android:summaryOn="@string/settings_interval_vibrate_on" android:summaryOff="@string/settings_interval_vibrate_off" />
+    </PreferenceCategory>
+    <Preference android:title="@string/settings_about" android:key="about" android:summary="@string/settings_about_summary" />
+</PreferenceScreen>

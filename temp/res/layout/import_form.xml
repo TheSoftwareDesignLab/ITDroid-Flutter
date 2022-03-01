@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" android:layout_weight="1.0"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+        <LinearLayout android:orientation="vertical" android:id="@id/contents" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <Spinner android:entries="@array/importers" android:id="@id/importer" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+            <Spinner android:id="@id/files" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+            <CheckBox android:id="@id/erase_database" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/erase_database" />
+        </LinearLayout>
+    </ScrollView>
+    <Button android:id="@id/submit" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/start_import" />
+</LinearLayout>
