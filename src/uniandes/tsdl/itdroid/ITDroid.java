@@ -86,19 +86,22 @@ public class ITDroid {
 		if (args.length != 7) {
 			System.out.println("******* ERROR: INCORRECT USAGE *******");
 			System.out.println("Argument List:");
-			System.out.println("1. APK path");
+			System.out.println("1. Base project path");
 			System.out.println("2. Package Name");
 			System.out.println("3. Binaries path");
 			System.out.println("4. Directory containing the settings.properties file");
 			System.out.println("5. Amount of untranslatable strings");
 			System.out.println("6. Path where test output will be stored");
 			System.out.println("7. Name of the emulator in which the app is going to be executed");
+			System.out.println("8. Path of the lib folder within the flutter project");
+			
 
 			return;
 		}
 
 		// Getting arguments
 		String apkName;
+		//for this instance the apk path will be the project path
 		String apkPath = args[0];
 		String appName = args[1];
 		String extraPath = args[2];
@@ -106,6 +109,7 @@ public class ITDroid {
 		int alpha = Integer.parseInt(args[4]);
 		outputPath = args[5];
 		String emulatorName = args[6];
+		String libPath = args[7];
 
 		// Fix params based in OS
 		String os = System.getProperty("os.name").toLowerCase();
