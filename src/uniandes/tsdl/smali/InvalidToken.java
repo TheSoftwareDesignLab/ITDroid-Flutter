@@ -25,7 +25,7 @@
  * INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+/*
 package uniandes.tsdl.smali;
 
 import org.antlr.runtime.CommonToken;
@@ -35,9 +35,9 @@ public class InvalidToken extends CommonToken {
     private final String message;
 
     public InvalidToken(String message) {
-        super(smaliParser.INVALID_TOKEN);
+        super(Dart2Parser.INVALID_TOKEN);
         this.message = message;
-        this.channel = smaliParser.ERROR_CHANNEL;
+        this.channel = Dart2Parser.ERROR_CHANNEL;
     }
 
     public InvalidToken(String message, String text) {
@@ -50,3 +50,4 @@ public class InvalidToken extends CommonToken {
         return message;
     }
 }
+*/

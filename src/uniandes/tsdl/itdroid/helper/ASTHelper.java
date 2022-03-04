@@ -2,6 +2,7 @@ package uniandes.tsdl.itdroid.helper;
 
 
 import java.io.BufferedWriter;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -18,10 +19,11 @@ import java.util.Set;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.TokenSource;
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.v4.runtime.TokenStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-import uniandes.tsdl.antlr.smaliParser;
+import uniandes.tsdl.antlr.*;
 import uniandes.tsdl.jflex.smaliFlexLexer;
 import uniandes.tsdl.smali.LexerErrorInterface;
 
@@ -39,9 +41,9 @@ public class ASTHelper {
 			LexerErrorInterface lexer = new smaliFlexLexer(reader);
 			((smaliFlexLexer)lexer).setSourceFile(smaliFile);
 			// System.out.println(((smaliFlexLexer)lexer).nextToken().getText());
-			CommonTokenStream tokens = new CommonTokenStream((TokenSource)lexer);
+			TokenStream tokens = new TokenStream((TokenSource)lexer);
 			tokens.getTokens();
-			smaliParser parser = new smaliParser(tokens);
+			Dart2Parser parser = new Dart2Parser(tokens);
 			// parser.setVerboseErrors(options.verboseErrors);
 			// parser.setAllowOdex(options.allowOdexOpcodes);
 			// parser.setApiLevel(options.apiLevel);

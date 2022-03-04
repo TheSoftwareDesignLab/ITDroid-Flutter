@@ -52,7 +52,7 @@ public class ITDroid {
 		try {
 //			 long initialTime = System.currentTimeMillis();
 //			 System.out.println(initialTime);
-			runITDroid(args);
+			runITDroidFlutter(args);
 //			 long finalTime = System.currentTimeMillis();
 //			 System.out.println(finalTime);
 //			 System.out.println(finalTime-initialTime);
@@ -80,6 +80,64 @@ public class ITDroid {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static void runITDroidFlutter(String[] args) throws RipException, Exception {
+		// Usage Error
+				if (args.length != 7) {
+					System.out.println("******* ERROR: INCORRECT USAGE *******");
+					System.out.println("Argument List:");
+					System.out.println("1. Base project path");
+					System.out.println("2. Package Name");
+					System.out.println("3. Binaries path");
+					System.out.println("4. Directory containing the settings.properties file");
+					System.out.println("5. Amount of untranslatable strings");
+					System.out.println("6. Path where test output will be stored");
+					System.out.println("7. Name of the emulator in which the app is going to be executed");
+					System.out.println("8. Path of the lib folder within the flutter project");
+					
+
+					return;
+				}
+
+				// Getting arguments
+				String apkName;
+				//for this instance the apk path will be the project path
+				String apkPath = args[0];
+				String appName = args[1];
+				String extraPath = args[2];
+				String langsDir = args[3];
+				int alpha = Integer.parseInt(args[4]);
+				outputPath = args[5];
+				String emulatorName = args[6];
+				String libPath = args[7];
+
+				// Fix params based in OS
+				String os = System.getProperty("os.name").toLowerCase();
+				if (os.indexOf("win") >= 0) {
+					extraPath = extraPath.replaceAll("/", File.separator) + File.separator;
+					apkPath = apkPath.replaceAll("/", File.separator);
+					apkName = apkPath.substring(apkPath.lastIndexOf("\\"));
+				} else {
+					apkName = apkPath.substring(apkPath.lastIndexOf("/"));
+				}
+				Helper.getInstance();
+				Helper.setPackageName(appName);
+
+				// Decode the APK
+				String decodedFolderPath = libPath;
+				JSONParser a = new JSONParser();
+				report = new JSONObject();
+				report.put("apkName", apkName);
+				report.put("appName", appName);
+				report.put("alpha", alpha);
+				report.put("outputFolder", outputPath);
+				report.put("emulatorName", emulatorName);
+
+				int possibleIPFS = ASTHelper.findHardCodedStrings(decodedFolderPath, extraPath, appName, outputPath);
+				report.put("hardcoded", possibleIPFS);
+
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void runITDroid(String[] args) throws RipException, Exception {
 		// Usage Error
@@ -146,9 +204,9 @@ public class ITDroid {
 
 		File baseStrings = new File(stringFiles[0]);
 		if (!baseStrings.exists()) {
-			report.put("error", "Your application do not have a strings.xml file.");
-			System.out.println("Your application do not have a strings.xml file.");
-			throw new ITDroidException("Your application do not have a strings.xml file.");
+			report.put("error", "Your application does not have a strings.xml file.");
+			System.out.println("Your application does not have a strings.xml file.");
+			throw new ITDroidException("Your application does not have a strings.xml file.");
 		}
 		XMLComparator xmlc = new XMLComparator(stringFiles, alpha, langsDir);
 
