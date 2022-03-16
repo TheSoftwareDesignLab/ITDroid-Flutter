@@ -22,6 +22,12 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.antlr.v4.runtime.tree.Trees ;
+import org.antlr.v4.tool.ast.GrammarAST;
 
 import uniandes.tsdl.antlr.*;
 import uniandes.tsdl.jflex.smaliFlexLexer;
@@ -29,27 +35,31 @@ import uniandes.tsdl.smali.LexerErrorInterface;
 
 public class ASTHelper {
 
-	public static CommonTree getAST(String sourcePath) {
+	public static GrammarAST getAST(String sourcePath) {
 
-		FileInputStream fis = null;
-		File smaliFile = new File(sourcePath);
+		CharStream fis = null;
+		File dartFile = new File(sourcePath);
 		CommonTree t = null;
 		try {
-			fis = new FileInputStream(smaliFile);
-			InputStreamReader reader = new InputStreamReader(fis, "UTF-8");
+			fis = CharStreams.fromFileName(sourcePath);
+			//CharStream reader =  CharStreams.fromString(fis);
 
-			LexerErrorInterface lexer = new smaliFlexLexer(reader);
-			((smaliFlexLexer)lexer).setSourceFile(smaliFile);
+			Dart2Lexer lexer = new Dart2Lexer(fis);
+			//((Dart2Lexer)lexer).setSourceFile(dartFile);
 			// System.out.println(((smaliFlexLexer)lexer).nextToken().getText());
-			TokenStream tokens = new TokenStream((TokenSource)lexer);
-			tokens.getTokens();
+			TokenStream tokens = (TokenStream) new CommonTokenStream((TokenSource)lexer);
+			//tokens.getTokens();		
 			Dart2Parser parser = new Dart2Parser(tokens);
 			// parser.setVerboseErrors(options.verboseErrors);
 			// parser.setAllowOdex(options.allowOdexOpcodes);
 			// parser.setApiLevel(options.apiLevel);
 
-			smaliParser.smali_file_return result = parser.smali_file();
-			t = result.getTree();
+			Dart2Parser.CompilationUnitContext result = parser.compilationUnit();
+			Dart2BaseListener listener = new Dart2BaseListener();
+			ParseTreeWalker walker = new ParseTreeWalker();
+			walker.walk(listener, result);
+			CommonTree ayy = new CommonTree();
+			t = ayy;
 			return t;
 		} catch (Exception e){
 			e.printStackTrace();
@@ -94,7 +104,7 @@ public class ASTHelper {
 	}
 
 	public static CommonTree hasIPutAndIGet(CommonTree t) {
-		CommonTree iput = getFirstUncleNamedOfType(smaliParser.I_STATEMENT_FORMAT22c_FIELD, "iput-object", t);
+		CommonTree iput = getFirstUncleNamedOfType(smalrser.I_STATEMENT_FORMAT22c_FIELD, "iput-object", t);
 		if(iput!=null && iput.getLine()-t.getLine()<7)
 		{
 			List<CommonTree> cousins = (List<CommonTree>)iput.getChildren();
