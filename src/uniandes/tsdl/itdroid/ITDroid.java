@@ -83,19 +83,18 @@ public class ITDroid {
 	@SuppressWarnings("unchecked")
 	public static void runITDroidFlutter(String[] args) throws RipException, Exception {
 		// Usage Error
-				if (args.length != 7) {
+				if (args.length != 8) {
 					System.out.println("******* ERROR: INCORRECT USAGE *******");
 					System.out.println("Argument List:");
 					System.out.println("1. Base project path");
 					System.out.println("2. Package Name");
-					System.out.println("3. Binaries path");
+					System.out.println("3. Extra folder path");
 					System.out.println("4. Directory containing the settings.properties file");
 					System.out.println("5. Amount of untranslatable strings");
 					System.out.println("6. Path where test output will be stored");
 					System.out.println("7. Name of the emulator in which the app is going to be executed");
 					System.out.println("8. Path of the lib folder within the flutter project");
 					
-
 					return;
 				}
 

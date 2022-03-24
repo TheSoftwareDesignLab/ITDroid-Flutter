@@ -6,8 +6,16 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.antlr.v4.tool.ast.GrammarAST;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.Tree;
+import org.antlr.v4.tool.ast.GrammarAST;
+import uniandes.tsdl.antlr.Dart2Parser;
 /**
  * This class provides an empty implementation of {@link Dart2Listener},
  * which can be extended to create a listener which only needs to handle a subset
@@ -15,12 +23,36 @@ import org.antlr.v4.tool.ast.GrammarAST;
  */
 public class Dart2BaseListener implements Dart2Listener {
 	private GrammarAST tree;
+	private ArrayList<Token> methods;
+	private HashSet<Token> strings;
+	
+	public ArrayList<Token> getMethods() {
+		 return methods;
+	}
+
+	public HashSet<Token> getStrings() {
+		 return strings;
+	}
+
+	/**
+	 * I need to make a commonTreeAdaptor or GRammarASTAdaptor, maybe ill use the commontree one
+	 * 
+	 * Then i need to make the adaptor, make a root and turn the  compilation unit into becomeRoot
+	 * 
+	 * Then make the root add child whenever the rule is entered, child will be token.
+	 */
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCompilationUnit(Dart2Parser.CompilationUnitContext ctx) { }
+	@Override public void enterCompilationUnit(Dart2Parser.CompilationUnitContext ctx) {
+		tree = new GrammarAST();
+		methods = new ArrayList<Token>();
+		strings = new HashSet<Token>();
+		
+		
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -344,7 +376,16 @@ public class Dart2BaseListener implements Dart2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMethodSignature(Dart2Parser.MethodSignatureContext ctx) { }
+	@Override public void enterMethodSignature(Dart2Parser.MethodSignatureContext ctx) { 
+		
+		//I have the token that has the info (in theory)
+		//Basetree lets you addchild but it needs to be of type Tree
+		
+		//RULE_methodSignature=27 in parser
+		Token methodName = ctx.getToken(Dart2Parser.RULE_methodSignature,0).getSymbol();
+		methods.add(methodName);
+		
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -754,7 +795,9 @@ public class Dart2BaseListener implements Dart2Listener {
 	 */
 	@Override public void enterStringLiteral(Dart2Parser.StringLiteralContext ctx) {
 		//Token current_token = ctx.;
-		String hardcoded = ctx.getText();
+		//String hardcoded = ctx.getText();
+		Token hardcoded = ctx.getToken(Dart2Parser.RULE_stringLiteral,0).getSymbol();
+		strings.add(hardcoded);
 		
 	}
 	
