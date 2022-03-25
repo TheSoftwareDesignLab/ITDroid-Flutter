@@ -24,13 +24,13 @@ import uniandes.tsdl.antlr.Dart2Parser;
 public class Dart2BaseListener implements Dart2Listener {
 	private GrammarAST tree;
 	private ArrayList<Token> methods;
-	private HashSet<Token> strings;
+	private ArrayList<Token> strings;
 	
 	public ArrayList<Token> getMethods() {
 		 return methods;
 	}
 
-	public HashSet<Token> getStrings() {
+	public ArrayList<Token> getStrings() {
 		 return strings;
 	}
 
@@ -49,7 +49,7 @@ public class Dart2BaseListener implements Dart2Listener {
 	@Override public void enterCompilationUnit(Dart2Parser.CompilationUnitContext ctx) {
 		tree = new GrammarAST();
 		methods = new ArrayList<Token>();
-		strings = new HashSet<Token>();
+		strings = new ArrayList<Token>();
 		
 		
 	}
@@ -796,7 +796,8 @@ public class Dart2BaseListener implements Dart2Listener {
 	@Override public void enterStringLiteral(Dart2Parser.StringLiteralContext ctx) {
 		//Token current_token = ctx.;
 		//String hardcoded = ctx.getText();
-		Token hardcoded = ctx.getToken(Dart2Parser.RULE_stringLiteral,0).getSymbol();
+		//Dart2Parser.RULE_stringLiteral;
+		Token hardcoded = ctx.getToken(27,0).getSymbol();
 		strings.add(hardcoded);
 		
 	}

@@ -69,7 +69,7 @@ public class ITDroid {
 					System.out.println(
 							"Internationalization analysis is finished, please check the report.json file for the results");
 
-					createReport(args);
+					//createReport(args);
 
 				} catch (IOException e) {
 					e.printStackTrace();

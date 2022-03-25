@@ -16,8 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.TokenSource;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenSource;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.commons.io.FileUtils;
@@ -51,7 +51,8 @@ public class ASTHelper {
 			// parser.setAllowOdex(options.allowOdexOpcodes);
 			// parser.setApiLevel(options.apiLevel);
 			Dart2Lexer lexer = new Dart2Lexer(fis);
-			TokenStream tokens = (TokenStream) new CommonTokenStream((TokenSource)lexer);
+			//TokenStream tokens = (TokenStream) new CommonTokenStream((TokenSource)lexer);
+			TokenStream tokens = (TokenStream) new CommonTokenStream(lexer);
 			Dart2Parser parser = new Dart2Parser(tokens);
 
 
@@ -60,7 +61,8 @@ public class ASTHelper {
 			ParseTreeWalker walker = new ParseTreeWalker();
 			walker.walk(listener, result);
 			ArrayList<Token> methods = listener.getMethods();
-			HashSet strings = listener.getStrings();
+			ArrayList strings = listener.getStrings();
+			System.out.println("entered getAST");
 			res = makeHash(methods,strings);
 			return res;
 		} catch (Exception e){
@@ -68,12 +70,12 @@ public class ASTHelper {
 		}
 		return res;
 	}
-	private static HashMap<Token,List<Token>> makeHash(ArrayList<Token> methods, HashSet strings){
+	private static HashMap<Token,List<Token>> makeHash(ArrayList<Token> methods, ArrayList strings){
 		HashMap<Token,List<Token>> hardcoded = new HashMap<Token,List<Token>> ();
 		
 		//Iterator<Token> stringsIter = strings.iterator();
 		try {
-		ArrayList<Token> stringArray = new ArrayList<Token>(strings);
+		ArrayList<Token> stringArray = strings;
 		
 		for (int i=0; i< methods.size(); i++) {
 			List<Token> templist = new ArrayList<>();
@@ -248,8 +250,8 @@ public class ASTHelper {
 	}
 */
 	public static int findHardCodedStrings(String folderPath, String extrasFolder, String packageName, String outputPath) throws IOException {
-		BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath+File.separator+"hcs.txt"));
-		folderPath = folderPath+File.separator+"dart";
+		BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath+File.separator+"Hcs.txt"));
+		//folderPath = folderPath+File.separator+"dart";
 		Collection<File> files = FileUtils.listFiles(new File(folderPath), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 		int possibleIPFS = 0;
 		for (File file : files) {
