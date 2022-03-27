@@ -36,11 +36,11 @@ import uniandes.tsdl.smali.LexerErrorInterface;
 //import uniandes.tsdl.jflex.smaliFlexLexer;
 public class ASTHelper {
 
-	public static HashMap<Token,List<Token>> getAST(String sourcePath) {
+	public static HashMap<Token,ArrayList<Token>> getAST(String sourcePath) {
 
 		CharStream fis = null;
 		File dartFile = new File(sourcePath);
-		HashMap<Token,List<Token>> res= null;
+		HashMap<Token,ArrayList<Token>> res= null;
 		try {
 			fis = CharStreams.fromFileName(sourcePath);
 			//CharStream reader =  CharStreams.fromString(fis);
@@ -70,15 +70,15 @@ public class ASTHelper {
 		}
 		return res;
 	}
-	private static HashMap<Token,List<Token>> makeHash(ArrayList<Token> methods, ArrayList strings){
-		HashMap<Token,List<Token>> hardcoded = new HashMap<Token,List<Token>> ();
+	private static HashMap<Token,ArrayList<Token>> makeHash(ArrayList<Token> methods, ArrayList strings){
+		HashMap<Token,ArrayList<Token>> hardcoded = new HashMap<Token,ArrayList<Token>>();
 		
 		//Iterator<Token> stringsIter = strings.iterator();
 		try {
 		ArrayList<Token> stringArray = strings;
 		
 		for (int i=0; i< methods.size(); i++) {
-			List<Token> templist = new ArrayList<>();
+			ArrayList<Token> templist = new ArrayList<>();
 			hardcoded.put((Token) methods.get(i), templist);
 		}
 		for (int i=0; i<methods.size(); i++) {
@@ -257,7 +257,9 @@ public class ASTHelper {
 		for (File file : files) {
 			if(file.getName().endsWith(".dart") ){
 				String fileName = file.getName().replaceAll(".dart", "");
-				HashMap<Token, List<Token>> list = ASTHelper.getAST(file.getAbsolutePath());
+				System.out.println("- -- -- -- printing file name");
+				System.out.println(fileName);
+				HashMap<Token, ArrayList<Token>> list = ASTHelper.getAST(file.getAbsolutePath());
 				bw.write(fileName);
 				bw.newLine();
 				Set<Token> keys = list.keySet();

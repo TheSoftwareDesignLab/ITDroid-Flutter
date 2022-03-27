@@ -148,19 +148,36 @@ public class Dart2BaseListener implements Dart2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunctionSignature(Dart2Parser.FunctionSignatureContext ctx) { }
+	@Override public void enterFunctionSignature(Dart2Parser.FunctionSignatureContext ctx) {
+		
+		//I have the token that has the info (in theory)
+		//Basetree lets you addchild but it needs to be of type Tree
+		
+		//RULE_methodSignature=27 in parser
+		//System.out.println("function NAME");
+		Token methodName = ctx.getStart();
+		String text = ctx.getStart().getText();
+		Integer line = ctx.getStart().getLine();
+		//System.out.println(text);
+		methods.add(methodName);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFunctionSignature(Dart2Parser.FunctionSignatureContext ctx) { }
+	@Override public void exitFunctionSignature(Dart2Parser.FunctionSignatureContext ctx) { 
+		//String text = ctx.getStart().getText();
+		//System.out.println(text);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFormalParameterPart(Dart2Parser.FormalParameterPartContext ctx) { }
+	@Override public void enterFormalParameterPart(Dart2Parser.FormalParameterPartContext ctx) { 
+	
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -172,7 +189,10 @@ public class Dart2BaseListener implements Dart2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterReturnType(Dart2Parser.ReturnTypeContext ctx) { }
+	@Override public void enterReturnType(Dart2Parser.ReturnTypeContext ctx) { 
+		//String text = ctx.getStart().getText();
+		//System.out.println(text);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -184,7 +204,9 @@ public class Dart2BaseListener implements Dart2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunctionBody(Dart2Parser.FunctionBodyContext ctx) { }
+	@Override public void enterFunctionBody(Dart2Parser.FunctionBodyContext ctx) { 
+
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -196,13 +218,21 @@ public class Dart2BaseListener implements Dart2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBlock(Dart2Parser.BlockContext ctx) { }
+	@Override public void enterBlock(Dart2Parser.BlockContext ctx) {
+		System.out.println("function body");
+		String text = ctx.getStart().getText();
+		System.out.println(text);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBlock(Dart2Parser.BlockContext ctx) { }
+	@Override public void exitBlock(Dart2Parser.BlockContext ctx) {
+		
+		String text = ctx.getStart().getText();
+		System.out.println(text);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -378,12 +408,7 @@ public class Dart2BaseListener implements Dart2Listener {
 	 */
 	@Override public void enterMethodSignature(Dart2Parser.MethodSignatureContext ctx) { 
 		
-		//I have the token that has the info (in theory)
-		//Basetree lets you addchild but it needs to be of type Tree
-		
-		//RULE_methodSignature=27 in parser
-		Token methodName = ctx.getToken(Dart2Parser.RULE_methodSignature,0).getSymbol();
-		methods.add(methodName);
+
 		
 	}
 	/**
@@ -397,7 +422,9 @@ public class Dart2BaseListener implements Dart2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaration(Dart2Parser.DeclarationContext ctx) { }
+	@Override public void enterDeclaration(Dart2Parser.DeclarationContext ctx) { 
+
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -797,8 +824,14 @@ public class Dart2BaseListener implements Dart2Listener {
 		//Token current_token = ctx.;
 		//String hardcoded = ctx.getText();
 		//Dart2Parser.RULE_stringLiteral;
-		Token hardcoded = ctx.getToken(27,0).getSymbol();
+		//System.out.println("String name !");
+		String text = ctx.getStart().getText();
+		Integer line = ctx.getStart().getLine();
+		//System.out.println(text+" " + line);
+		Token hardcoded = ctx.getStart();
+		//Token hardcoded = ctx.getToken(Dart2Parser.RULE_stringLiteral,0).getSymbol();
 		strings.add(hardcoded);
+		
 		
 	}
 	
@@ -897,7 +930,9 @@ public class Dart2BaseListener implements Dart2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunctionExpression(Dart2Parser.FunctionExpressionContext ctx) { }
+	@Override public void enterFunctionExpression(Dart2Parser.FunctionExpressionContext ctx) { 
+
+	}
 	/**
 	 * {@inheritDoc}
 	 *
