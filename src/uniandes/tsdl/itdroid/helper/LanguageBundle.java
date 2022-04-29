@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -12,6 +13,7 @@ public class LanguageBundle {
 
 	private static final String PROPERTY_FILE_NAME = "settings";
 	private ResourceBundle bundle;
+	private ArrayList langs;
 
 
 	public LanguageBundle(String propertyDir) {

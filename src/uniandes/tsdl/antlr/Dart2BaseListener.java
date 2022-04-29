@@ -219,9 +219,6 @@ public class Dart2BaseListener implements Dart2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterBlock(Dart2Parser.BlockContext ctx) {
-		System.out.println("function body");
-		String text = ctx.getStart().getText();
-		System.out.println(text);
 	}
 	/**
 	 * {@inheritDoc}
@@ -230,8 +227,6 @@ public class Dart2BaseListener implements Dart2Listener {
 	 */
 	@Override public void exitBlock(Dart2Parser.BlockContext ctx) {
 		
-		String text = ctx.getStart().getText();
-		System.out.println(text);
 	}
 	/**
 	 * {@inheritDoc}
@@ -772,7 +767,11 @@ public class Dart2BaseListener implements Dart2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLiteral(Dart2Parser.LiteralContext ctx) { }
+	@Override public void enterLiteral(Dart2Parser.LiteralContext ctx) { 
+		System.out.println("--object-------");
+		String text = ctx.getStart().getText();
+		System.out.println(text);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -968,7 +967,9 @@ public class Dart2BaseListener implements Dart2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConstObjectExpression(Dart2Parser.ConstObjectExpressionContext ctx) { }
+	@Override public void enterConstObjectExpression(Dart2Parser.ConstObjectExpressionContext ctx) { 
+	
+	}
 	/**
 	 * {@inheritDoc}
 	 *

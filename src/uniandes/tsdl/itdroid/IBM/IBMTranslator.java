@@ -149,7 +149,7 @@ public class IBMTranslator implements TranslationInterface {
             if(!attributeFormatted2.equals(NO_ATTRIBUTE_FOUND)){
                 newString.setAttribute("formatted", attributeFormatted2);
             }
-            text2 = replaceUnscapedCharacters(fullTranslations.get(i));
+            text2 = replac eUnscapedCharacters(fullTranslations.get(i));
             text2 = replaceInjectedStrings2(text2);
             text2 = replaceInjectedDigits2(text2);
             text2 = replaceInjectedStrings4(text2);

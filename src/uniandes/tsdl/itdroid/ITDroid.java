@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -83,17 +84,18 @@ public class ITDroid {
 	@SuppressWarnings("unchecked")
 	public static void runITDroidFlutter(String[] args) throws RipException, Exception {
 		// Usage Error
-				if (args.length != 8) {
+				if (args.length != 9) {
 					System.out.println("******* ERROR: INCORRECT USAGE *******");
 					System.out.println("Argument List:");
 					System.out.println("1. Base project path");
 					System.out.println("2. Package Name");
 					System.out.println("3. Extra folder path");
-					System.out.println("4. Directory containing the settings.properties file");
+					System.out.println("4. Directory containing the settings.properties file with selected languages");
 					System.out.println("5. Amount of untranslatable strings");
 					System.out.println("6. Path where test output will be stored");
 					System.out.println("7. Name of the emulator in which the app is going to be executed");
 					System.out.println("8. Path of the lib folder within the flutter project");
+					System.out.println("9. Path of the folder containing the ARBs");
 					
 					return;
 				}
@@ -109,6 +111,8 @@ public class ITDroid {
 				outputPath = args[5];
 				String emulatorName = args[6];
 				String libPath = args[7];
+				String intlPath = args[8];
+				
 
 				// Fix params based in OS
 				String os = System.getProperty("os.name").toLowerCase();
@@ -132,8 +136,16 @@ public class ITDroid {
 				report.put("outputFolder", outputPath);
 				report.put("emulatorName", emulatorName);
 
-				int possibleIPFS = ASTHelper.findHardCodedStrings(decodedFolderPath, extraPath, appName, outputPath);
-				report.put("hardcoded", possibleIPFS);
+				//int possibleIPFS = ASTHelper.findHardCodedStrings(decodedFolderPath, extraPath, appName, outputPath);
+				//report.put("hardcoded", possibleIPFS);
+				
+				// Read selected operators
+				LanguageBundle lngBundle = new LanguageBundle(langsDir);
+				System.out.println(lngBundle.printSelectedLanguages());
+
+				// Identify translated and notTranslated languages
+				String[] lngs = lngBundle.getSelectedLanguagesAsArray();
+				String[] stringFiles = buildStringPaths(lngs, intlPath);
 
 	}
 	
@@ -193,13 +205,15 @@ public class ITDroid {
 		int possibleIPFS = ASTHelper.findHardCodedStrings(decodedFolderPath, extraPath, appName, outputPath);
 		report.put("hardcoded", possibleIPFS);
 
+		// HEEEEEEEEEEEEEERE =============================================================== vvvv
+		
 		// Read selected operators
 		LanguageBundle lngBundle = new LanguageBundle(langsDir);
 		System.out.println(lngBundle.printSelectedLanguages());
 
 		// Identify translated and notTranslated languages
 		String[] lngs = lngBundle.getSelectedLanguagesAsArray();
-		String[] stringFiles = buildStringPaths(lngs);
+		String[] stringFiles = buildStringPaths(lngs, langsDir);
 
 		File baseStrings = new File(stringFiles[0]);
 		if (!baseStrings.exists()) {
@@ -209,6 +223,7 @@ public class ITDroid {
 		}
 		XMLComparator xmlc = new XMLComparator(stringFiles, alpha, langsDir);
 
+		
 		// Notify user about translated and not-translated languages
 		ArrayList<String> translatedFiles = xmlc.getUsefull();
 		System.out.println("Your application is translated to the following languages:");
@@ -422,12 +437,31 @@ public class ITDroid {
 		}
 	}
 
-	private static String[] buildStringPaths(String[] lngs) throws UnsupportedEncodingException {
+	private static String[] buildStringPaths(String[] lngs, String intlPath) throws UnsupportedEncodingException {
 		String decodedPath = Helper.getInstance().getCurrentDirectory();
 
 		String[] paths = new String[lngs.length + 1];
 
-		Path base = Paths.get(decodedPath, "temp", "res");
+		//get the initial part with the l10n folder and one file
+		File folder = new File(intlPath);
+		File[] listOfFiles = folder.listFiles();
+		ArrayList<String> newlist = new ArrayList<String>();
+		for(int i=0; i<listOfFiles.length; i++) {
+			//System.out.println(FilenameUtils.getExtension(listOfFiles[i].getName().toString()));
+			if(FilenameUtils.getExtension(listOfFiles[i].getName().toString()).equals("arb")) {
+				newlist.add(listOfFiles[i].getName().toString());
+			}
+		}
+		/*
+		 * this is done in order to get the prefix for the intl files
+		 */
+		String fileName = newlist.get(0);
+		String[] splitExtension = fileName.split("\\.");
+		String[] splitSep = splitExtension[0].split("_");
+		String prefix = splitSep[0];
+		
+		
+		Path base = Paths.get(intlPath);
 		paths[0] = base.resolve("values").resolve("strings.xml").toAbsolutePath().toString();
 		for (int i = 1; i < paths.length; i++) {
 			paths[i] = base.resolve("values-" + lngs[i - 1]).resolve("strings.xml").toAbsolutePath().toString();
@@ -438,6 +472,41 @@ public class ITDroid {
 		return paths;
 	}
 
+	private static String[] buildStringPathsFlutter(String[] lngs, String intlPath) throws UnsupportedEncodingException {
+		String decodedPath = Helper.getInstance().getCurrentDirectory();
+
+		String[] paths = new String[lngs.length + 1];
+
+		//get the initial part with the l10n folder and one file
+		File folder = new File(intlPath);
+		File[] listOfFiles = folder.listFiles();
+		ArrayList<String> newlist = new ArrayList<String>();
+		for(int i=0; i<listOfFiles.length; i++) {
+			//System.out.println(FilenameUtils.getExtension(listOfFiles[i].getName().toString()));
+			if(FilenameUtils.getExtension(listOfFiles[i].getName().toString()).equals("arb")) {
+				newlist.add(listOfFiles[i].getName().toString());
+			}
+		}
+		/*
+		 * this is done in order to get the prefix for the intl files
+		 */
+		String fileName = newlist.get(0);
+		String[] splitExtension = fileName.split("\\.");
+		String[] splitSep = splitExtension[0].split("_");
+		String prefix = splitSep[0];
+		
+		
+		Path base = Paths.get(intlPath);
+		paths[0] = base.resolve("values").resolve("strings.xml").toAbsolutePath().toString();
+		for (int i = 1; i < paths.length; i++) {
+			paths[i] = base.resolve("values-" + lngs[i - 1]).resolve("strings.xml").toAbsolutePath().toString();
+			pathsMap.put(base.resolve("values-" + lngs[i - 1]).resolve("strings.xml").toAbsolutePath().toString(),
+					lngs[i - 1]);
+		}
+
+		return paths;
+	}
+	
 	public static void printResults(Process process) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		String line = "";

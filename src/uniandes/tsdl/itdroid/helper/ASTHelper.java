@@ -43,15 +43,7 @@ public class ASTHelper {
 		HashMap<Token,ArrayList<Token>> res= null;
 		try {
 			fis = CharStreams.fromFileName(sourcePath);
-			//CharStream reader =  CharStreams.fromString(fis);
-			//((Dart2Lexer)lexer).setSourceFile(dartFile);
-			// System.out.println(((smaliFlexLexer)lexer).nextToken().getText());
-			//tokens.getTokens();	
-			// parser.setVerboseErrors(options.verboseErrors);
-			// parser.setAllowOdex(options.allowOdexOpcodes);
-			// parser.setApiLevel(options.apiLevel);
 			Dart2Lexer lexer = new Dart2Lexer(fis);
-			//TokenStream tokens = (TokenStream) new CommonTokenStream((TokenSource)lexer);
 			TokenStream tokens = (TokenStream) new CommonTokenStream(lexer);
 			Dart2Parser parser = new Dart2Parser(tokens);
 
@@ -250,7 +242,7 @@ public class ASTHelper {
 	}
 */
 	public static int findHardCodedStrings(String folderPath, String extrasFolder, String packageName, String outputPath) throws IOException {
-		BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath+File.separator+"Hcs.txt"));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath+File.separator+"hcs.txt"));
 		//folderPath = folderPath+File.separator+"dart";
 		Collection<File> files = FileUtils.listFiles(new File(folderPath), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 		int possibleIPFS = 0;
