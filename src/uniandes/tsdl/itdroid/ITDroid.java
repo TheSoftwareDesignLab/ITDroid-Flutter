@@ -18,6 +18,7 @@ import org.json.simple.parser.JSONParser;
 
 import uniandes.tsdl.itdroid.IBM.IBMTranslator;
 import uniandes.tsdl.itdroid.helper.APKToolWrapper;
+import uniandes.tsdl.itdroid.helper.ARBComparator;
 import uniandes.tsdl.itdroid.helper.ASTHelper;
 import uniandes.tsdl.itdroid.helper.EmulatorHelper;
 import uniandes.tsdl.itdroid.helper.Helper;
@@ -145,7 +146,16 @@ public class ITDroid {
 
 				// Identify translated and notTranslated languages
 				String[] lngs = lngBundle.getSelectedLanguagesAsArray();
-				String[] stringFiles = buildStringPaths(lngs, intlPath);
+				String[] stringFiles = buildStringPathsFlutter(lngs, intlPath);
+				
+				File baseStrings = new File(stringFiles[0]);
+				if (!baseStrings.exists()) {
+					report.put("error", "Your application does not have a app_en.arb file.");
+					System.out.println("Your application does not have a app_en.arb  file.");
+					throw new ITDroidException("Your application does not have a app_en.arb  file.");
+				}
+				ARBComparator xmlc = new ARBComparator(stringFiles, alpha, langsDir);
+
 
 	}
 	
@@ -497,11 +507,12 @@ public class ITDroid {
 		
 		
 		Path base = Paths.get(intlPath);
-		paths[0] = base.resolve("values").resolve("strings.xml").toAbsolutePath().toString();
+		paths[0] = base.resolve(prefix +"_en.arb").toAbsolutePath().toString();
 		for (int i = 1; i < paths.length; i++) {
-			paths[i] = base.resolve("values-" + lngs[i - 1]).resolve("strings.xml").toAbsolutePath().toString();
-			pathsMap.put(base.resolve("values-" + lngs[i - 1]).resolve("strings.xml").toAbsolutePath().toString(),
+			paths[i] = base.resolve(prefix +"_" + lngs[i - 1]+".arb").toAbsolutePath().toString();
+			pathsMap.put(base.resolve(prefix +"_" + lngs[i - 1]+".arb").toAbsolutePath().toString(),
 					lngs[i - 1]);
+			//System.out.println(paths[i]);
 		}
 
 		return paths;
