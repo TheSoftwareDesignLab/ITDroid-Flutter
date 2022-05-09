@@ -7,6 +7,8 @@ public class Translator {
     private String inputLang;
 
     private String outputLang;
+    
+    private String[] paths;
 
     //Constructor
     public Translator(String pPath, String pInLang, String pOutLang){
@@ -14,10 +16,20 @@ public class Translator {
         this.inputLang = pInLang;
         this.outputLang = pOutLang;
     }
+    public Translator(String[] pPaths, String pInLang, String pOutLang){
+        this.paths = pPaths;
+        this.inputLang = pInLang;
+        this.outputLang = pOutLang;
+    }
 
     public void translate(TranslationInterface translationStrategy) throws Exception{
     	System.out.println(this.path+" - "+this.inputLang+" - "+this.outputLang);
         translationStrategy.translate(this.path, this.inputLang, this.outputLang);
+    }
+    
+    public void translateFlutter(TranslationInterface translationStrategy) throws Exception{
+    	System.out.println(this.path+" - "+this.inputLang+" - "+this.outputLang);
+        translationStrategy.translateFlutter(this.paths, this.inputLang, this.outputLang);
     }
 
     //Setters and getters

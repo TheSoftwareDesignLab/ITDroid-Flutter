@@ -3,10 +3,13 @@ package uniandes.tsdl.itdroid.IBM;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -18,6 +21,9 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.ibm.watson.developer_cloud.language_translator.v3.LanguageTranslator;
 import com.ibm.watson.developer_cloud.language_translator.v3.model.TranslateOptions;
 import com.ibm.watson.developer_cloud.language_translator.v3.model.Translation;
@@ -161,7 +167,130 @@ public class IBMTranslator implements TranslationInterface {
         output.setFormat(Format.getPrettyFormat());
         output.output(outputDocument, new OutputStreamWriter(new FileOutputStream(xmlOutputFile), "UTF8"));
     }
+    @Override
+    public void translateFlutter(String[] arbPaths, String inputLang, String outputLang) throws Exception {
+        Dotenv dotenv = Dotenv.load();
+        System.out.println(dotenv.get("GATEWAY"));
+        //Initialize the dictionary to exclude automatically translated strings.
+        NotTranslatableStringsDictionary dictionary = new NotTranslatableStringsDictionary(propertiesDirectory);
+        //Read the default strings.xml file
+        SAXBuilder builder = new SAXBuilder();
+        File arbFile = new File(arbPaths[0]);
+        Document document = builder.build(arbFile);
 
+ 
+		
+        // Initialize set to manage strings that are already translated
+        Set<String> translatedStrings = new HashSet<>();
+        // Read the language specific strings.xml file
+        SAXBuilder builder2 = new SAXBuilder();
+        File arbOutputFolder = new File(OUTPUT_FOLDER + "-" + outputLang + "/");
+        File arbOutputFile = new File(OUTPUT_FOLDER + "-" + outputLang + "/prefix_"+ outputLang +".arb");
+        // Create the output directory if it doesn't exists.
+        if(!arbOutputFolder.exists()){
+        	arbOutputFolder.mkdirs();
+            arbOutputFile.createNewFile();
+        }
+        Document outputDocument = builder2.build(arbOutputFile);
+        Element outputRoot = outputDocument.getRootElement();
+        
+        //Flutter Flow
+        Reader reader = new FileReader(outputLang);
+        Gson gson = new Gson();
+		JsonElement json = gson.fromJson(reader, JsonElement.class);
+		JsonObject jsonArb = json.getAsJsonObject();
+		Set<String> keys = jsonArb.keySet();
+		
+        //Getting the keys of the target arb
+        Iterator<String> itr = keys.iterator();
+		while(itr.hasNext()){
+			String key = itr.next();
+			if(!key.startsWith("@")) {
+				translatedStrings.add(key);
+			}
+		}
+ 
+        //Extract the strings that the default has and the target doesnt 
+        
+        Reader reader2 = new FileReader(arbPaths[0]);
+        Gson gson2 = new Gson();
+		JsonElement json2 = gson2.fromJson(reader2, JsonElement.class);
+		JsonObject jsonArb2 = json2.getAsJsonObject();
+		Set<String> keys2 = jsonArb2.keySet();
+		
+	    String attributeValue;
+	    String text;
+        Iterator<String> itr2 = keys2.iterator();
+		while(itr2.hasNext()){
+			String key = itr2.next();
+			attributeValue = key;
+			text = jsonArb2.get(key).toString();
+			if(!(translatedStrings.contains(attributeValue))&& !isOnlyNumbersAndSpecs(text) && !text.startsWith("@")) {
+	            text = replaceInjectedStrings1(text);
+                text = replaceInjectedDigits1(text);
+                text = replaceInjectedStrings3(text);
+                values.add(text);
+                names.add(attributeValue);
+			}
+
+		 }
+
+        int index = 0;
+        List<String> toTranslate;
+        List<String> fullTranslations = new ArrayList();
+        while (index < values.size()){
+            toTranslate = new ArrayList();
+            for(int i = index; (i <  (index + TRANSLATOR_PACKAGE_SIZE)); i++) {
+                if(i >= values.size()){
+                    break;
+                } else {
+                    toTranslate.add(values.get(i));
+                }
+            }
+            //Call the IBM API to translate strings.
+            IamOptions options = new IamOptions.Builder().apiKey(dotenv.get("API_KEY")).build();
+            LanguageTranslator languageTranslator = new LanguageTranslator(
+                    "2018-05-01",
+                    options);
+            System.out.println("model: " + inputLang + "-" + outputLang);
+            languageTranslator.setEndPoint(dotenv.get("GATEWAY"));
+            TranslateOptions translateOptions = new TranslateOptions.Builder().text(toTranslate).modelId(inputLang + '-' + outputLang).build();
+            //Get the translation results.
+            TranslationResult result = languageTranslator.translate(translateOptions)
+                    .execute();
+            List<Translation> translations = result.getTranslations();
+
+            for(int i = 0; i < translations.size(); i++){
+                fullTranslations.add(translations.get(i).getTranslationOutput());
+            }
+
+            index += TRANSLATOR_PACKAGE_SIZE;
+        }
+
+
+        //Add the translated strings to the specific language strings.xml file.
+        Element newString;
+        String text2;
+        String attributeFormatted2;
+        for (int i = 0; i < fullTranslations.size(); i++){
+            newString = new Element("string");
+            newString.setAttribute("name", names.get(i));
+            attributeFormatted2 = formatted.get(i);
+            if(!attributeFormatted2.equals(NO_ATTRIBUTE_FOUND)){
+                newString.setAttribute("formatted", attributeFormatted2);
+            }
+            text2 = replaceUnscapedCharacters(fullTranslations.get(i));
+            text2 = replaceInjectedStrings2(text2);
+            text2 = replaceInjectedDigits2(text2);
+            text2 = replaceInjectedStrings4(text2);
+            newString.setText(text2);
+            outputRoot.addContent(newString);
+        }
+        //Save changes.
+        XMLOutputter output = new XMLOutputter();
+        output.setFormat(Format.getPrettyFormat());
+        output.output(outputDocument, new OutputStreamWriter(new FileOutputStream(arbOutputFile), "UTF8"));
+    }
     /**
      * Checks if a string only contains numbers and special characters
      * @param string

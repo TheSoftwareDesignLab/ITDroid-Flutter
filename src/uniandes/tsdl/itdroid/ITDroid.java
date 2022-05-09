@@ -154,8 +154,28 @@ public class ITDroid {
 					System.out.println("Your application does not have a app_en.arb  file.");
 					throw new ITDroidException("Your application does not have a app_en.arb  file.");
 				}
-				ARBComparator xmlc = new ARBComparator(stringFiles, alpha, langsDir);
+				ARBComparator arbc = new ARBComparator(stringFiles, alpha, langsDir);
+				
+				// Notify user about translated and not-translated languages
+				ArrayList<String> translatedFiles = arbc.getUsefull();
+				System.out.println("Your application is translated to the following languages:");
+				for (int i = 0; i < translatedFiles.size(); i++) {
+					System.out.println(lngBundle.getBundle().getObject(pathsMap.get(translatedFiles.get(i))));
+				}
+				ArrayList<String> notTrnsltdFiles = arbc.getUseLess();
+				System.out.println("Your application is not translated to the following languages:");
+				for (int i = 0; i < notTrnsltdFiles.size(); i++) {
+					System.out.println(lngBundle.getBundle().getObject(pathsMap.get(notTrnsltdFiles.get(i))));
+				}
 
+				// Translate the original file into missing languages
+				System.out.println("We are going to translate your strings...");
+				for (int i = 0; i < notTrnsltdFiles.size(); i++) {
+					String defLang = lngBundle.getBundle().getObject("defaultLng").toString();
+					String tLang = pathsMap.get(notTrnsltdFiles.get(i));
+					Translator t = new Translator(stringFiles, defLang, tLang);
+					t.translate(new IBMTranslator(langsDir));
+				}
 
 	}
 	

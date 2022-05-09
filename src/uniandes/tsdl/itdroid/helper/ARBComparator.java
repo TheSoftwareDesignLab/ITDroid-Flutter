@@ -43,7 +43,6 @@ public class ARBComparator {
 				//I have to make a new set of safewords and dictionary
 				NotTranslatableARBStrings dictionary = new NotTranslatableARBStrings(directory);
 				//Read the default strings.xml file
-				SAXBuilder builder = new SAXBuilder();
 				Gson gson = new Gson();
 				JsonElement json = gson.fromJson(reader, JsonElement.class);
 				JsonObject jsonArb = json.getAsJsonObject();
@@ -54,35 +53,45 @@ public class ARBComparator {
 				Iterator<String> itr = keys.iterator();
 				String stringName;
 				while(itr.hasNext()){
-						originalStrings.add(itr.next());
-						
+					String key = itr.next();
+					String[] hey =key.split("@");
+					if(!hey[0].equals("")) {
+						originalStrings.add(hey[0]);
+					}
+
 				}
-				/*
 				File file2;
-				SAXBuilder builder2 = new SAXBuilder();
-				Document document2;
 				List<Element> strings2;
 				Element root2;
 				Set<String> translatedStrings;
+				Gson gson2 = new Gson();
 				for (int i =1; i < arbs.length; i++) {
 					file2 = new File(arbs[i]);
 					if(file2.exists()){
-						document2 = builder2.build(file2);
-						root2 = document2.getRootElement();
-						strings2 = root2.getChildren();
-						Element e2;
-						String string2Name;
+						Reader reader2 = new FileReader(arbs[i]);
+						JsonElement json2 = gson.fromJson(reader2, JsonElement.class);
+						JsonObject jsonArb2 = json2.getAsJsonObject();
+						Set<String> keys2 = jsonArb2.keySet();
 						translatedStrings = new HashSet<>();
-						for(int j = 0; j < strings2.size(); j++){
-							e2 = strings2.get(j);
-							string2Name = e2.getAttributeValue("name");
-							if(dictionary.translatable(string2Name)){
-								translatedStrings.add(string2Name);
-							}
+						Iterator<String> itr2 = keys2.iterator();
+						while(itr2.hasNext()){
+								translatedStrings.add(itr2.next());
+								//System.out.println(itr2.next());
 						}
 
 						Set <String> difference = new HashSet(originalStrings);
 						difference.removeAll(translatedStrings);
+						/*
+						Iterator<String> diff = difference.iterator();
+						System.out.println(". . .. .. . .. . ");
+						System.out.println("difference with: "+ arbs[i]);
+						while(diff.hasNext()){
+								String hehe= diff.next();
+								translatedStrings.add(hehe);
+			
+								System.out.println(hehe);
+						}
+						*/
 						if(difference.size() > alpha){
 							useless.add(arbs[i]);
 						}
@@ -93,7 +102,7 @@ public class ARBComparator {
 						useless.add(arbs[i]);
 					}
 				}
-				*/
+				
 			}
 			
 		} catch (ParserConfigurationException e) {
