@@ -9,6 +9,10 @@ public class Translator {
     private String outputLang;
     
     private String[] paths;
+    
+    private String baseDir;
+    
+    private String prefix;
 
     //Constructor
     public Translator(String pPath, String pInLang, String pOutLang){
@@ -16,10 +20,12 @@ public class Translator {
         this.inputLang = pInLang;
         this.outputLang = pOutLang;
     }
-    public Translator(String[] pPaths, String pInLang, String pOutLang){
+    public Translator(String[] pPaths, String pInLang, String pOutLang, String intlPath, String pPrefix){
         this.paths = pPaths;
         this.inputLang = pInLang;
         this.outputLang = pOutLang;
+        this.baseDir =intlPath;
+        this.prefix = pPrefix;
     }
 
     public void translate(TranslationInterface translationStrategy) throws Exception{
@@ -29,7 +35,7 @@ public class Translator {
     
     public void translateFlutter(TranslationInterface translationStrategy) throws Exception{
     	System.out.println(this.path+" - "+this.inputLang+" - "+this.outputLang);
-        translationStrategy.translateFlutter(this.paths, this.inputLang, this.outputLang);
+        translationStrategy.translateFlutter(this.paths, this.inputLang, this.outputLang, this.baseDir, this.prefix);
     }
 
     //Setters and getters

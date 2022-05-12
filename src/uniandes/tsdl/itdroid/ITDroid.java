@@ -173,11 +173,110 @@ public class ITDroid {
 				for (int i = 0; i < notTrnsltdFiles.size(); i++) {
 					String defLang = lngBundle.getBundle().getObject("defaultLng").toString();
 					String tLang = pathsMap.get(notTrnsltdFiles.get(i));
-					Translator t = new Translator(stringFiles, defLang, tLang);
-					t.translate(new IBMTranslator(langsDir));
+					String prefix = getPrefix(intlPath);
+					Translator t = new Translator(stringFiles, defLang, tLang, intlPath, prefix);
+					t.translateFlutter(new IBMTranslator(langsDir));
 				}
 
+/*	
+
+				JSONObject lngsResults = new JSONObject();
+
+				String deftLanguage = lngBundle.getBundle().getObject("defaultLng").toString();
+				report.put("dfltLang", deftLanguage);
+
+				// Explore app using default language
+				String resultFolderPath = RIPHelper.runRIPI18N(deftLanguage, outputPath, true, extraPath, apkPath, appName,
+						deftLanguage);
+				System.out.println("The app has been inspected");
+				LayoutGraph defltGraph = new LayoutGraph(deftLanguage, resultFolderPath);
+				JSONObject dfltLangJSON = new JSONObject();
+				dfltLangJSON.put("lang", "English");
+				dfltLangJSON.put("dflt", true);
+				dfltLangJSON.put("amStates", defltGraph.getStates().size());
+				dfltLangJSON.put("amTrans", defltGraph.getTransitions().size());
+				lngsResults.put(deftLanguage, dfltLangJSON);
+				graphs.put(deftLanguage, defltGraph);
+
+				BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath + File.separator + "ipfs.csv", true));
+				bw.write("language;state;nodePos;ipfScore");
+				bw.newLine();
+				bw.close();
+
+				System.out.println("Inspecting translated versions");
+				// Generate the graph for all the translated languages
+				for (int i = 0; i < translatedFiles.size(); i++) {
+
+					String lang = pathsMap.get(translatedFiles.get(i));
+					System.out.println("Processing " + lang + " app version");
+					JSONObject dfltLangJSONTrans = new JSONObject();
+					try {
+						// call RIP R&R
+						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, true, extraPath, apkPath,
+								resultFolderPath, appName, lngBundle.getBundle().getString(lang));
+						System.out.println("The app has been inspected");
+
+						// Builds the graph for given language
+						LayoutGraph langGraph = new LayoutGraph(lang, resultFolderPathh);
+						dfltLangJSONTrans.put("lang", lngBundle.getBundle().getString(lang));
+						dfltLangJSONTrans.put("amStates", langGraph.getStates().size());
+						dfltLangJSONTrans.put("amTrans", langGraph.getTransitions().size());
+						graphs.put(lang, langGraph);
+
+						// Compares the default graph with the current language graph
+						LayoutGraphComparision lgc = new LayoutGraphComparision(deftLanguage, defltGraph,
+								lngBundle.getBundle().getString(lang), lang, langGraph, resultFolderPathh, outputPath,
+								dfltLangJSONTrans);
+						lgcomparisions.put(lang, lgc);
+
+					} catch (RipException e) {
+						dfltLangJSONTrans.put("error", e.getMessage());
+						System.out.println(
+								"This translated version of the app is not suitable for reproducing the steps recorded over default app version. It is possible that your automated tests might not work over this language version");
+					}
+
+					lngsResults.put(lang, dfltLangJSONTrans);
+
+				}
+
+				System.out.println("Inspecting non translated versions");
+				// Generate the graph for all the not translated languages
+				for (int i = 0; i < notTrnsltdFiles.size(); i++) {
+
+					String lang = pathsMap.get(notTrnsltdFiles.get(i));
+					System.out.println("Processing " + lang + " app version");
+					JSONObject dfltLangJSONTrans = new JSONObject();
+					try {
+						// call RIP R&R
+						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, false, extraPath, apkPath,
+								resultFolderPath, appName, lngBundle.getBundle().getString(lang));
+						System.out.println("The app has been inspected");
+
+						// Builds the graph for given language
+						LayoutGraph langGraph = new LayoutGraph(lang, resultFolderPathh);
+						dfltLangJSONTrans.put("lang", lngBundle.getBundle().getString(lang));
+						dfltLangJSONTrans.put("amStates", langGraph.getStates().size());
+						dfltLangJSONTrans.put("amTrans", langGraph.getTransitions().size());
+						graphs.put(lang, langGraph);
+
+						// Compares the default graph with the current language graph
+						LayoutGraphComparision lgc = new LayoutGraphComparision(deftLanguage, defltGraph,
+								lngBundle.getBundle().getString(lang), lang, langGraph, resultFolderPathh, outputPath,
+								dfltLangJSONTrans);
+						lgcomparisions.put(lang, lgc);
+					} catch (RipException e) {
+						dfltLangJSONTrans.put("error", e.getMessage());
+						System.out.println(
+								"This translated version of the app is not suitable for reproducing the steps recorded over default app version. It is possible that your automated tests might not work over this language version");
+					}
+					lngsResults.put(lang, dfltLangJSONTrans);
+				}
+
+				report.put("langsReport", lngsResults);
+			*/
 	}
+
+	
 	
 	@SuppressWarnings("unchecked")
 	public static void runITDroid(String[] args) throws RipException, Exception {
@@ -501,12 +600,7 @@ public class ITDroid {
 
 		return paths;
 	}
-
-	private static String[] buildStringPathsFlutter(String[] lngs, String intlPath) throws UnsupportedEncodingException {
-		String decodedPath = Helper.getInstance().getCurrentDirectory();
-
-		String[] paths = new String[lngs.length + 1];
-
+	private static String getPrefix(String intlPath) {
 		//get the initial part with the l10n folder and one file
 		File folder = new File(intlPath);
 		File[] listOfFiles = folder.listFiles();
@@ -524,7 +618,14 @@ public class ITDroid {
 		String[] splitExtension = fileName.split("\\.");
 		String[] splitSep = splitExtension[0].split("_");
 		String prefix = splitSep[0];
-		
+		return prefix;
+	}
+
+	private static String[] buildStringPathsFlutter(String[] lngs, String intlPath) throws UnsupportedEncodingException {
+		String decodedPath = Helper.getInstance().getCurrentDirectory();
+
+		String[] paths = new String[lngs.length + 1];
+		String prefix = getPrefix(intlPath);
 		
 		Path base = Paths.get(intlPath);
 		paths[0] = base.resolve(prefix +"_en.arb").toAbsolutePath().toString();

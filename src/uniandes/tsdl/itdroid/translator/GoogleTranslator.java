@@ -8,7 +8,7 @@ public class GoogleTranslator implements TranslationInterface{
     }
 
 	@Override
-	public void translateFlutter(String[] arbPaths, String inputLang, String outputLang) throws Exception {
+	public void translateFlutter(String[] arbPaths, String inputLang, String outputLang, String baseDir, String prefix) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}

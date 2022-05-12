@@ -168,15 +168,15 @@ public class IBMTranslator implements TranslationInterface {
         output.output(outputDocument, new OutputStreamWriter(new FileOutputStream(xmlOutputFile), "UTF8"));
     }
     @Override
-    public void translateFlutter(String[] arbPaths, String inputLang, String outputLang) throws Exception {
+    public void translateFlutter(String[] arbPaths, String inputLang, String outputLang, String baseDir, String prefix) throws Exception {
         Dotenv dotenv = Dotenv.load();
         System.out.println(dotenv.get("GATEWAY"));
+		
         //Initialize the dictionary to exclude automatically translated strings.
         NotTranslatableStringsDictionary dictionary = new NotTranslatableStringsDictionary(propertiesDirectory);
         //Read the default strings.xml file
         SAXBuilder builder = new SAXBuilder();
         File arbFile = new File(arbPaths[0]);
-        Document document = builder.build(arbFile);
 
  
 		
@@ -184,18 +184,18 @@ public class IBMTranslator implements TranslationInterface {
         Set<String> translatedStrings = new HashSet<>();
         // Read the language specific strings.xml file
         SAXBuilder builder2 = new SAXBuilder();
-        File arbOutputFolder = new File(OUTPUT_FOLDER + "-" + outputLang + "/");
-        File arbOutputFile = new File(OUTPUT_FOLDER + "-" + outputLang + "/prefix_"+ outputLang +".arb");
+        //File arbOutputFolder = new File(OUTPUT_FOLDER + "-" + outputLang + "/");
+        //File arbOutputFile = new File(OUTPUT_FOLDER + "-" + outputLang + "/prefix_"+ outputLang +".arb");
         // Create the output directory if it doesn't exists.
-        if(!arbOutputFolder.exists()){
-        	arbOutputFolder.mkdirs();
-            arbOutputFile.createNewFile();
-        }
-        Document outputDocument = builder2.build(arbOutputFile);
-        Element outputRoot = outputDocument.getRootElement();
+        //if(!arbOutputFolder.exists()){
+        	//arbOutputFolder.mkdirs();
+            //arbOutputFile.createNewFile();
+       // }
+        //Document outputDocument = builder2.build(arbOutputFile);
+        //Element outputRoot = outputDocument.getRootElement();
         
         //Flutter Flow
-        Reader reader = new FileReader(outputLang);
+        Reader reader = new FileReader(baseDir + "/"+prefix+ "_" +outputLang +".arb");
         Gson gson = new Gson();
 		JsonElement json = gson.fromJson(reader, JsonElement.class);
 		JsonObject jsonArb = json.getAsJsonObject();
@@ -225,7 +225,8 @@ public class IBMTranslator implements TranslationInterface {
 			String key = itr2.next();
 			attributeValue = key;
 			text = jsonArb2.get(key).toString();
-			if(!(translatedStrings.contains(attributeValue))&& !isOnlyNumbersAndSpecs(text) && !text.startsWith("@")) {
+			String[] hey =key.split("@");
+			if(!(translatedStrings.contains(attributeValue))&& !isOnlyNumbersAndSpecs(text) && !key.startsWith("@")) {
 	            text = replaceInjectedStrings1(text);
                 text = replaceInjectedDigits1(text);
                 text = replaceInjectedStrings3(text);
@@ -245,6 +246,7 @@ public class IBMTranslator implements TranslationInterface {
                     break;
                 } else {
                     toTranslate.add(values.get(i));
+                    
                 }
             }
             //Call the IBM API to translate strings.
@@ -262,12 +264,13 @@ public class IBMTranslator implements TranslationInterface {
 
             for(int i = 0; i < translations.size(); i++){
                 fullTranslations.add(translations.get(i).getTranslationOutput());
+                System.out.println(translations.get(i).getTranslationOutput());
             }
 
             index += TRANSLATOR_PACKAGE_SIZE;
         }
 
-
+        /*
         //Add the translated strings to the specific language strings.xml file.
         Element newString;
         String text2;
@@ -290,6 +293,7 @@ public class IBMTranslator implements TranslationInterface {
         XMLOutputter output = new XMLOutputter();
         output.setFormat(Format.getPrettyFormat());
         output.output(outputDocument, new OutputStreamWriter(new FileOutputStream(arbOutputFile), "UTF8"));
+        */
     }
     /**
      * Checks if a string only contains numbers and special characters
@@ -329,7 +333,33 @@ public class IBMTranslator implements TranslationInterface {
 
         return repleaceable;
     }
+    
+    public static String  replaceInjectedSpace1 (String input) {
+        String repleaceable = input;
+        Pattern pattern = Pattern.compile("\\n");
+        Matcher matcher = pattern.matcher(repleaceable);
+        while(matcher.find()) {
+            String injectedCharacter = matcher.group(0);
+            char number = injectedCharacter.charAt(1);
+            repleaceable = matcher.replaceFirst("spx");
+            matcher = pattern.matcher(repleaceable);
+        }
 
+        return repleaceable;
+    }
+
+    public static String replaceInjectedSpace2 (String input) {
+        String repleaceable = input;
+        Pattern pattern = Pattern.compile("spx");
+        Matcher matcher = pattern.matcher(repleaceable);
+        while(matcher.find()) {
+            String injectedCharacter = matcher.group(0);
+            repleaceable = matcher.replaceFirst("\\n");
+            matcher = pattern.matcher(repleaceable);
+        }
+        return repleaceable;
+
+    }
     /**
      * Replaces the non translatable string for the injected parameters values.
      * @param input
