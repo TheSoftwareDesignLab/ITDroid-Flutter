@@ -8,9 +8,11 @@ import java.io.FileWriter;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,8 +24,10 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ibm.watson.developer_cloud.language_translator.v3.LanguageTranslator;
 import com.ibm.watson.developer_cloud.language_translator.v3.model.TranslateOptions;
 import com.ibm.watson.developer_cloud.language_translator.v3.model.Translation;
@@ -173,7 +177,6 @@ public class IBMTranslator implements TranslationInterface {
         System.out.println(dotenv.get("GATEWAY"));
 		
         //Initialize the dictionary to exclude automatically translated strings.
-        NotTranslatableStringsDictionary dictionary = new NotTranslatableStringsDictionary(propertiesDirectory);
         //Read the default strings.xml file
         SAXBuilder builder = new SAXBuilder();
         File arbFile = new File(arbPaths[0]);
@@ -184,13 +187,19 @@ public class IBMTranslator implements TranslationInterface {
         Set<String> translatedStrings = new HashSet<>();
         // Read the language specific strings.xml file
         SAXBuilder builder2 = new SAXBuilder();
-        //File arbOutputFolder = new File(OUTPUT_FOLDER + "-" + outputLang + "/");
-        //File arbOutputFile = new File(OUTPUT_FOLDER + "-" + outputLang + "/prefix_"+ outputLang +".arb");
+        File arbOutputFolder = new File(OUTPUT_FOLDER + "-" + outputLang + "/");
+        File arbOutputFile = new File(baseDir+ "/" + prefix +"_"+ outputLang +".arb");
         // Create the output directory if it doesn't exists.
-        //if(!arbOutputFolder.exists()){
-        	//arbOutputFolder.mkdirs();
-            //arbOutputFile.createNewFile();
-       // }
+        if(!arbOutputFile.exists()){
+        	Gson gson = new Gson();
+            arbOutputFile.createNewFile();
+            FileWriter writer2 = new FileWriter(arbOutputFile);
+            JsonObject jsonInit = new JsonObject();
+            jsonInit.addProperty("xyzInIt",0);
+            gson.toJson(jsonInit, writer2);
+            writer2.flush();
+            writer2.close();
+       }
         //Document outputDocument = builder2.build(arbOutputFile);
         //Element outputRoot = outputDocument.getRootElement();
         
@@ -206,6 +215,7 @@ public class IBMTranslator implements TranslationInterface {
 		while(itr.hasNext()){
 			String key = itr.next();
 			if(!key.startsWith("@")) {
+				
 				translatedStrings.add(key);
 			}
 		}
@@ -227,9 +237,12 @@ public class IBMTranslator implements TranslationInterface {
 			text = jsonArb2.get(key).toString();
 			String[] hey =key.split("@");
 			if(!(translatedStrings.contains(attributeValue))&& !isOnlyNumbersAndSpecs(text) && !key.startsWith("@")) {
-	            text = replaceInjectedStrings1(text);
-                text = replaceInjectedDigits1(text);
+	            //text = replaceInjectedSpace1(text);
+                //text = replaceInjectedDigits1(text);
                 text = replaceInjectedStrings3(text);
+                text = replaceInjectedDot1(text);
+                //text = replaceInjectedDotEnd1(text);
+               System.out.println(text);
                 values.add(text);
                 names.add(attributeValue);
 			}
@@ -270,30 +283,35 @@ public class IBMTranslator implements TranslationInterface {
             index += TRANSLATOR_PACKAGE_SIZE;
         }
 
-        /*
-        //Add the translated strings to the specific language strings.xml file.
-        Element newString;
+        //Add the translated strings to the specific language arb file.
+        //The existing file is read and the translated strings are added and then the file is rewritten
+        Reader readerFile = new FileReader(arbOutputFile);
+        //.setPrettyPrinting().disableHtmlEscaping()
+		Gson gson3 = new GsonBuilder().create();
+		JsonElement jsonFile = gson3.fromJson(readerFile, JsonElement.class);	
+		JsonObject jsonArbFile = jsonFile.getAsJsonObject();
         String text2;
-        String attributeFormatted2;
+        JsonElement response;
+        JsonParser parser = new JsonParser();
         for (int i = 0; i < fullTranslations.size(); i++){
-            newString = new Element("string");
-            newString.setAttribute("name", names.get(i));
-            attributeFormatted2 = formatted.get(i);
-            if(!attributeFormatted2.equals(NO_ATTRIBUTE_FOUND)){
-                newString.setAttribute("formatted", attributeFormatted2);
-            }
-            text2 = replaceUnscapedCharacters(fullTranslations.get(i));
-            text2 = replaceInjectedStrings2(text2);
-            text2 = replaceInjectedDigits2(text2);
+        	text2= fullTranslations.get(i);
+            //text2 = replaceUnscapedCharacters(fullTranslations.get(i));
+            //text2 = replaceInjectedSpace2(fullTranslations.get(i));
+            //text2 = replaceInjectedDigits2(text2);
             text2 = replaceInjectedStrings4(text2);
-            newString.setText(text2);
-            outputRoot.addContent(newString);
+        	text2 = replaceInjectedDot2(fullTranslations.get(i));
+        	
+        	//System.out.println(fullTranslations.get(i));
+        	//JsonElement jsonString = parser.parse(text2); 
+        	JsonElement element = gson.fromJson (text2, JsonElement.class);
+        	//System.out.println(element);
+            jsonArbFile.add(names.get(i),element);
         }
         //Save changes.
-        XMLOutputter output = new XMLOutputter();
-        output.setFormat(Format.getPrettyFormat());
-        output.output(outputDocument, new OutputStreamWriter(new FileOutputStream(arbOutputFile), "UTF8"));
-        */
+        FileWriter writer = new FileWriter(arbOutputFile);
+        gson.toJson(jsonArbFile, writer);
+        writer.flush();
+        writer.close();
     }
     /**
      * Checks if a string only contains numbers and special characters
@@ -310,6 +328,12 @@ public class IBMTranslator implements TranslationInterface {
      * @return
      */
     public static String replaceUnscapedCharacters(String text) {
+        String modifier1 = text.replaceAll("(?<!\\\\)\"", "\\\\\"");
+        String modifier2 = modifier1.replaceAll("(?<!\\\\)\'", "\\\\\'");
+        return modifier2;
+    }
+    
+    public static String replaceUnscapedCharacters2(String text) {
         String modifier1 = text.replaceAll("(?<!\\\\)\"", "\\\\\"");
         String modifier2 = modifier1.replaceAll("(?<!\\\\)\'", "\\\\\'");
         return modifier2;
@@ -347,14 +371,40 @@ public class IBMTranslator implements TranslationInterface {
 
         return repleaceable;
     }
+    
+    
+    public static String  replaceInjectedDot1 (String input) {
+        String repleaceable = input;
+        Pattern pattern = Pattern.compile("[.]");
+        Matcher matcher = pattern.matcher(repleaceable);
+        while(matcher.find()) {
+            String injectedCharacter = matcher.group(0);
+            repleaceable = matcher.replaceFirst("DDDOT");
+            matcher = pattern.matcher(repleaceable);
+        }
 
+        return repleaceable;
+    }
+ 
+    public static String replaceInjectedDot2 (String input) {
+        String repleaceable = input;
+        Pattern pattern = Pattern.compile("DDDOT");
+        Matcher matcher = pattern.matcher(repleaceable);
+        while(matcher.find()) {
+            String injectedCharacter = matcher.group(0);
+            repleaceable = matcher.replaceFirst("\\.");
+            matcher = pattern.matcher(repleaceable);
+        }
+        return repleaceable;
+
+    }
     public static String replaceInjectedSpace2 (String input) {
         String repleaceable = input;
         Pattern pattern = Pattern.compile("spx");
         Matcher matcher = pattern.matcher(repleaceable);
         while(matcher.find()) {
             String injectedCharacter = matcher.group(0);
-            repleaceable = matcher.replaceFirst("\\n");
+            repleaceable = matcher.replaceFirst("n");
             matcher = pattern.matcher(repleaceable);
         }
         return repleaceable;
@@ -417,7 +467,7 @@ public class IBMTranslator implements TranslationInterface {
 
     public static String replaceInjectedStrings3 (String input) {
         String repleaceable = input;
-        Pattern pattern = Pattern.compile("%s");
+        Pattern pattern = Pattern.compile("(\\\\\")+");
         Matcher matcher = pattern.matcher(repleaceable);
         if(matcher.find()) {
             repleaceable = matcher.replaceAll("dfg");

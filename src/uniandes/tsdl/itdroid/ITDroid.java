@@ -70,7 +70,7 @@ public class ITDroid {
 					file.flush();
 					System.out.println(
 							"Internationalization analysis is finished, please check the report.json file for the results");
-
+//heere report
 					//createReport(args);
 
 				} catch (IOException e) {
@@ -178,15 +178,21 @@ public class ITDroid {
 					t.translateFlutter(new IBMTranslator(langsDir));
 				}
 
-/*	
+				//String newApkPath = APKToolWrapper.buildAPKFlutter(extraPath, appName, outputPath, apkPath);
 
+				//if (newApkPath.equals("")) {
+				//	return;
+				//}
+// here ripper
+				/*
+				String newApkPath = "../Apps/natrium_wallet_flutter_TEST/build/app/outputs/flutter-apk/app-release.apk";
 				JSONObject lngsResults = new JSONObject();
 
 				String deftLanguage = lngBundle.getBundle().getObject("defaultLng").toString();
 				report.put("dfltLang", deftLanguage);
 
 				// Explore app using default language
-				String resultFolderPath = RIPHelper.runRIPI18N(deftLanguage, outputPath, true, extraPath, apkPath, appName,
+				String resultFolderPath = RIPHelper.runRIPI18N(deftLanguage, outputPath, true, extraPath, newApkPath, appName,
 						deftLanguage);
 				System.out.println("The app has been inspected");
 				LayoutGraph defltGraph = new LayoutGraph(deftLanguage, resultFolderPath);
@@ -212,7 +218,7 @@ public class ITDroid {
 					JSONObject dfltLangJSONTrans = new JSONObject();
 					try {
 						// call RIP R&R
-						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, true, extraPath, apkPath,
+						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, true, extraPath, newApkPath,
 								resultFolderPath, appName, lngBundle.getBundle().getString(lang));
 						System.out.println("The app has been inspected");
 
@@ -248,7 +254,7 @@ public class ITDroid {
 					JSONObject dfltLangJSONTrans = new JSONObject();
 					try {
 						// call RIP R&R
-						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, false, extraPath, apkPath,
+						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, false, extraPath, newApkPath,
 								resultFolderPath, appName, lngBundle.getBundle().getString(lang));
 						System.out.println("The app has been inspected");
 
@@ -273,7 +279,9 @@ public class ITDroid {
 				}
 
 				report.put("langsReport", lngsResults);
-			*/
+			// here ripper ends
+			 * 
+			 */
 	}
 
 	
@@ -334,7 +342,7 @@ public class ITDroid {
 		int possibleIPFS = ASTHelper.findHardCodedStrings(decodedFolderPath, extraPath, appName, outputPath);
 		report.put("hardcoded", possibleIPFS);
 
-		// HEEEEEEEEEEEEEERE =============================================================== vvvv
+	
 		
 		// Read selected operators
 		LanguageBundle lngBundle = new LanguageBundle(langsDir);
@@ -373,7 +381,7 @@ public class ITDroid {
 			Translator t = new Translator(stringFiles[0], defLang, tLang);
 			t.translate(new IBMTranslator(langsDir));
 		}
-
+		// HEEEEEEEEEEEEEERE =============================================================== vvvv
 		// Builds the APK with all the languages
 		String newApkPath = APKToolWrapper.buildAPK(extraPath, appName, outputPath);
 

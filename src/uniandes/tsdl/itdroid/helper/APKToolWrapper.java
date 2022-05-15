@@ -59,4 +59,29 @@ public class APKToolWrapper {
 		//				is.read(b,0,b.length);
 		//				System.out.println("INFO: "+new String(b));
 	}
+	
+	public static String buildAPKFlutter(String extraPath, String appName, String outputPath, String apkPath) throws IOException, InterruptedException{
+		String decodedPath = Helper.getInstance().getCurrentDirectory();
+		Process ps = Runtime.getRuntime().exec(new String[]{"java","-jar",Paths.get(decodedPath,extraPath,"apktool.jar").toAbsolutePath().toString(),"b",Paths.get(apkPath).toAbsolutePath().toString(),"-o",Paths.get(decodedPath,outputPath,appName+".apk").toAbsolutePath().toString(),"-f"});
+		System.out.println("Building mutant");
+		ps.waitFor();
+		Process pss = Runtime.getRuntime().exec(new String[]{"java","-jar",Paths.get(decodedPath,extraPath,"uber-apk-signer.jar").toAbsolutePath().toString(),"-a",Paths.get(decodedPath,outputPath,appName+".apk").toAbsolutePath().toString(),"-o",Paths.get(decodedPath,outputPath).toAbsolutePath().toString()});
+		System.out.println("Signing mutant");
+		pss.waitFor();
+		if(Files.exists(Paths.get(decodedPath,outputPath,appName+"-aligned-debugSigned.apk").toAbsolutePath())) {
+			System.out.println("SUCCESS: The mutated APK has been generated.");
+			return Paths.get(decodedPath,outputPath,appName+"-aligned-debugSigned.apk").toAbsolutePath().toString();
+		} else {
+			System.out.println("ERROR: The mutated APK has not been generated.");
+			return "";
+		}
+		//				InputStream es = ps.getErrorStream();
+		//				byte e[] = new byte[es.available()];
+		//				es.read(e,0,e.length);
+		//				System.out.println("ERROR: "+ new String(e));
+		//				InputStream is = ps.getInputStream();
+		//				byte b[] = new byte[is.available()];
+		//				is.read(b,0,b.length);
+		//				System.out.println("INFO: "+new String(b));
+	}
 }
