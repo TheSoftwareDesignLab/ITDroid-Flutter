@@ -71,7 +71,7 @@ public class ITDroid {
 					System.out.println(
 							"Internationalization analysis is finished, please check the report.json file for the results");
 //heere report
-					//createReport(args);
+					createReport(args);
 
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -177,14 +177,15 @@ public class ITDroid {
 					Translator t = new Translator(stringFiles, defLang, tLang, intlPath, prefix);
 					t.translateFlutter(new IBMTranslator(langsDir));
 				}
-
-				//String newApkPath = APKToolWrapper.buildAPKFlutter(extraPath, appName, outputPath, apkPath);
-
-				//if (newApkPath.equals("")) {
-				//	return;
-				//}
-// here ripper
 				/*
+				String newApkPath = APKToolWrapper.buildAPKFlutter(extraPath, appName, outputPath, apkPath);
+
+				if (newApkPath.equals("")) {
+					return;
+				}
+				*/
+// here ripper
+				
 				String newApkPath = "../Apps/natrium_wallet_flutter_TEST/build/app/outputs/flutter-apk/app-release.apk";
 				JSONObject lngsResults = new JSONObject();
 
@@ -280,8 +281,8 @@ public class ITDroid {
 
 				report.put("langsReport", lngsResults);
 			// here ripper ends
-			 * 
-			 */
+			  
+			 
 	}
 
 	
