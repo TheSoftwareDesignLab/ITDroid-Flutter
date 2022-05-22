@@ -18,7 +18,7 @@ public class RIPHelper {
 			tempFolder.delete();
 		}
 		tempFolder.mkdirs();
-		String ripconfig = buildRIPConfig(apkLocation, appName, outputFolder, tempFolder.getAbsolutePath(), "",language, extraPath,expresiveLanguage);
+		String ripconfig = buildRIPConfig(apkLocation, appName, outputFolder, tempFolder.getAbsolutePath(), "",language, extraPath, expresiveLanguage);
 		ProcessBuilder pB = new ProcessBuilder(new String[]{"java","-jar",Paths.get(decodedPath,extraPath,"RIPi18n.jar").toAbsolutePath().toString(), ripconfig});
 		Process ps = pB.start();
 		System.out.print("Going through your app");
@@ -28,8 +28,9 @@ public class RIPHelper {
 		while ((line = reader.readLine())!=null) {
 //						System.out.println(line);
 			System.out.print(".");
+			System.out.print(line);
 		}
-
+		System.out.println("This should have worked here, but it never returned");
 		ps.waitFor();
 		Thread.sleep(5000);
 		return tempFolder.getCanonicalPath();
@@ -91,6 +92,7 @@ public class RIPHelper {
 		while ((line = reader.readLine())!=null || (errorLine = errorReader.readLine())!= null) {
 //									System.out.println(line);
 			System.out.print(".");
+			System.out.println(reader.readLine());
 			if(errorLine != null && errorLine.contains("EXITING EXECUTION. START STATE != CURRENT STATE")) {
 				throw new RipException("New replay failure");
 			}
@@ -132,4 +134,6 @@ public class RIPHelper {
 		
 		return "";
 	}
+	
+	
 }
