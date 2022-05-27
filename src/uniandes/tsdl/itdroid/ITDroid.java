@@ -186,14 +186,14 @@ public class ITDroid {
 				*/
 // here ripper
 				
-				String newApkPath = "../Apps/natrium_wallet_flutter_TEST/build/app/outputs/flutter-apk/app-release.apk";
+				//String newApkPath = "../Apps/natrium_wallet_flutter_TEST/build/app/outputs/flutter-apk/app-release.apk";
 				JSONObject lngsResults = new JSONObject();
 
 				String deftLanguage = lngBundle.getBundle().getObject("defaultLng").toString();
 				report.put("dfltLang", deftLanguage);
 
 				// Explore app using default language
-				String resultFolderPath = RIPHelper.runRIPI18N(deftLanguage, outputPath, true, extraPath, newApkPath, appName,
+				String resultFolderPath = RIPHelper.runRIPI18N(deftLanguage, outputPath, true, extraPath, apkPath, appName,
 						deftLanguage);
 				System.out.println("The app has been inspected");
 				LayoutGraph defltGraph = new LayoutGraph(deftLanguage, resultFolderPath);
@@ -219,7 +219,7 @@ public class ITDroid {
 					JSONObject dfltLangJSONTrans = new JSONObject();
 					try {
 						// call RIP R&R
-						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, true, extraPath, newApkPath,
+						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, true, extraPath, apkPath,
 								resultFolderPath, appName, lngBundle.getBundle().getString(lang));
 						System.out.println("The app has been inspected");
 
@@ -255,7 +255,7 @@ public class ITDroid {
 					JSONObject dfltLangJSONTrans = new JSONObject();
 					try {
 						// call RIP R&R
-						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, false, extraPath, newApkPath,
+						String resultFolderPathh = RIPHelper.runRIPRRi18n(lang, outputPath, false, extraPath, apkPath,
 								resultFolderPath, appName, lngBundle.getBundle().getString(lang));
 						System.out.println("The app has been inspected");
 

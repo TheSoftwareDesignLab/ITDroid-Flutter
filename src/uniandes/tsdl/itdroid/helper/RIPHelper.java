@@ -28,7 +28,7 @@ public class RIPHelper {
 		while ((line = reader.readLine())!=null) {
 						System.out.println(line);
 			System.out.print(".");
-			System.out.print(line);
+			//System.out.print(line);
 		}
 		System.out.println("This should have worked here, but it never returned");
 		ps.waitFor();

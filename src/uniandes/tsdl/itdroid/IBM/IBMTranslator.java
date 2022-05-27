@@ -277,7 +277,7 @@ public class IBMTranslator implements TranslationInterface {
 
             for(int i = 0; i < translations.size(); i++){
                 fullTranslations.add(translations.get(i).getTranslationOutput());
-                System.out.println(translations.get(i).getTranslationOutput());
+                //System.out.println(translations.get(i).getTranslationOutput());
             }
 
             index += TRANSLATOR_PACKAGE_SIZE;
@@ -299,12 +299,14 @@ public class IBMTranslator implements TranslationInterface {
             //text2 = replaceInjectedSpace2(fullTranslations.get(i));
             //text2 = replaceInjectedDigits2(text2);
             text2 = replaceInjectedStrings4(text2);
-        	text2 = replaceInjectedDot2(fullTranslations.get(i));
+        	text2 = replaceInjectedDot2(text2);
+        	text2 = replaceInjectedu0027(text2);
         	
-        	//System.out.println(fullTranslations.get(i));
         	//JsonElement jsonString = parser.parse(text2); 
+        	//text2 = text2.replaceAll("[.]$","");
+        	//System.out.println(text2);
         	JsonElement element = gson.fromJson (text2, JsonElement.class);
-        	//System.out.println(element);
+        	
             jsonArbFile.add(names.get(i),element);
         }
         //Save changes.
@@ -398,6 +400,20 @@ public class IBMTranslator implements TranslationInterface {
         return repleaceable;
 
     }
+    
+    public static String  replaceInjectedu0027 (String input) {
+        String repleaceable = input;
+        Pattern pattern = Pattern.compile("\\u0027");
+        Matcher matcher = pattern.matcher(repleaceable);
+        while(matcher.find()) {
+            String injectedCharacter = matcher.group(0);
+            repleaceable = matcher.replaceFirst("'");
+            matcher = pattern.matcher(repleaceable);
+        }
+
+        return repleaceable;
+    }
+ 
     public static String replaceInjectedSpace2 (String input) {
         String repleaceable = input;
         Pattern pattern = Pattern.compile("spx");
