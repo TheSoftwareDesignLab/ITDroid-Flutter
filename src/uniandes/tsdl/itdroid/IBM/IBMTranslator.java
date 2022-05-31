@@ -237,12 +237,13 @@ public class IBMTranslator implements TranslationInterface {
 			text = jsonArb2.get(key).toString();
 			String[] hey =key.split("@");
 			if(!(translatedStrings.contains(attributeValue))&& !isOnlyNumbersAndSpecs(text) && !key.startsWith("@")) {
-	            //text = replaceInjectedSpace1(text);
+	            text = replaceInjectedSpace1(text);
                 //text = replaceInjectedDigits1(text);
                 text = replaceInjectedStrings3(text);
                 text = replaceInjectedDot1(text);
+                text = replaceInjectedQuestion1(text);
                 //text = replaceInjectedDotEnd1(text);
-               System.out.println(text);
+               //System.out.println(text);
                 values.add(text);
                 names.add(attributeValue);
 			}
@@ -298,13 +299,17 @@ public class IBMTranslator implements TranslationInterface {
             //text2 = replaceUnscapedCharacters(fullTranslations.get(i));
             //text2 = replaceInjectedSpace2(fullTranslations.get(i));
             //text2 = replaceInjectedDigits2(text2);
+        	text2= replaceInjectedSpace2(text2);
             text2 = replaceInjectedStrings4(text2);
         	text2 = replaceInjectedDot2(text2);
+        	text2 = replaceEndDot(text2);
         	text2 = replaceInjectedu0027(text2);
+        	text2 = replaceInjectedQuestion2(text2);
+        	
         	
         	//JsonElement jsonString = parser.parse(text2); 
         	//text2 = text2.replaceAll("[.]$","");
-        	//System.out.println(text2);
+        	System.out.println(text2);
         	JsonElement element = gson.fromJson (text2, JsonElement.class);
         	
             jsonArbFile.add(names.get(i),element);
@@ -362,7 +367,7 @@ public class IBMTranslator implements TranslationInterface {
     
     public static String  replaceInjectedSpace1 (String input) {
         String repleaceable = input;
-        Pattern pattern = Pattern.compile("\\n");
+        Pattern pattern = Pattern.compile("\\\\n");
         Matcher matcher = pattern.matcher(repleaceable);
         while(matcher.find()) {
             String injectedCharacter = matcher.group(0);
@@ -381,7 +386,20 @@ public class IBMTranslator implements TranslationInterface {
         Matcher matcher = pattern.matcher(repleaceable);
         while(matcher.find()) {
             String injectedCharacter = matcher.group(0);
-            repleaceable = matcher.replaceFirst("DDDOT");
+            repleaceable = matcher.replaceFirst("DDOTO");
+            matcher = pattern.matcher(repleaceable);
+        }
+
+        return repleaceable;
+    }
+    
+    public static String  replaceEndDot(String input) {
+        String repleaceable = input;
+        Pattern pattern = Pattern.compile("[.]");
+        Matcher matcher = pattern.matcher(repleaceable);
+        while(matcher.find()) {
+            String injectedCharacter = matcher.group(0);
+            repleaceable = matcher.replaceFirst("");
             matcher = pattern.matcher(repleaceable);
         }
 
@@ -390,7 +408,7 @@ public class IBMTranslator implements TranslationInterface {
  
     public static String replaceInjectedDot2 (String input) {
         String repleaceable = input;
-        Pattern pattern = Pattern.compile("DDDOT");
+        Pattern pattern = Pattern.compile("DDOTO");
         Matcher matcher = pattern.matcher(repleaceable);
         while(matcher.find()) {
             String injectedCharacter = matcher.group(0);
@@ -407,7 +425,7 @@ public class IBMTranslator implements TranslationInterface {
         Matcher matcher = pattern.matcher(repleaceable);
         while(matcher.find()) {
             String injectedCharacter = matcher.group(0);
-            repleaceable = matcher.replaceFirst("'");
+            repleaceable = matcher.replaceFirst(" ");
             matcher = pattern.matcher(repleaceable);
         }
 
@@ -420,7 +438,7 @@ public class IBMTranslator implements TranslationInterface {
         Matcher matcher = pattern.matcher(repleaceable);
         while(matcher.find()) {
             String injectedCharacter = matcher.group(0);
-            repleaceable = matcher.replaceFirst("n");
+            repleaceable = matcher.replaceFirst("\\\n");
             matcher = pattern.matcher(repleaceable);
         }
         return repleaceable;
@@ -498,7 +516,31 @@ public class IBMTranslator implements TranslationInterface {
         Pattern pattern = Pattern.compile("dfg");
         Matcher matcher = pattern.matcher(repleaceable);
         if(matcher.find()) {
-            repleaceable = matcher.replaceAll("%s");
+            repleaceable = matcher.replaceAll("\\\\\"");
+        }
+
+        return repleaceable;
+
+    }
+    
+    public static String replaceInjectedQuestion1 (String input) {
+        String repleaceable = input;
+        Pattern pattern = Pattern.compile("\\?");
+        Matcher matcher = pattern.matcher(repleaceable);
+        if(matcher.find()) {
+            repleaceable = matcher.replaceAll("qrru#");
+        }
+
+        return repleaceable;
+
+    }
+
+    public static String replaceInjectedQuestion2 (String input) {
+        String repleaceable = input;
+        Pattern pattern = Pattern.compile("qrru#");
+        Matcher matcher = pattern.matcher(repleaceable);
+        if(matcher.find()) {
+            repleaceable = matcher.replaceAll("\\?");
         }
 
         return repleaceable;
