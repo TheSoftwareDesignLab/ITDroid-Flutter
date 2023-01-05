@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textAppearance="?android:textAppearanceMedium" android:gravity="center" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/empty_service_interval_templates" />
+    <Button android:id="@id/empty_add_interval_template" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/add_service_interval_template" />
+    <Button android:id="@id/empty_add_default_templates" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/add_default_templates" />
+</merge>

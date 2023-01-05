@@ -1,0 +1,16 @@
+main
+	void line: 71
+		"rate" line: 73
+		"symbol" line: 74
+	HashMap line: 92
+	Future line: 67
+	void line: 77
+		"saved" line: 80
+		"settings" line: 81
+		"disableGraphs" line: 84
+		"currency" line: 85
+		"USD" line: 85
+		"settings" line: 87
+image_keys
+generated_plugin_registrant
+	void line: 13

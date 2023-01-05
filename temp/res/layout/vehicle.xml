@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:mileage="http://schemas.android.com/apk/res/com.evancharlton.mileage">
+    <com.evancharlton.mileage.views.DividerView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/divider_vehicle_information" />
+    <TableLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <TableRow>
+            <EditText android:id="@id/title" android:layout_width="0.0dip" android:layout_height="wrap_content" android:hint="@string/title" android:layout_weight="1.0" android:inputType="textEmailSubject|textCapWords" />
+            <EditText android:id="@id/year" android:layout_width="0.0dip" android:layout_height="wrap_content" android:hint="@string/year" android:digits="\ 1234567890" android:layout_weight="1.0" android:inputType="number" />
+        </TableRow>
+        <TableRow>
+            <EditText android:id="@id/make" android:layout_width="0.0dip" android:layout_height="wrap_content" android:hint="@string/make" android:layout_weight="1.0" android:inputType="textEmailSubject|textCapWords" />
+            <EditText android:id="@id/model" android:layout_width="0.0dip" android:layout_height="wrap_content" android:hint="@string/model" android:layout_weight="1.0" android:inputType="textEmailSubject|textCapWords" />
+        </TableRow>
+    </TableLayout>
+    <EditText android:id="@id/description" android:layout_width="fill_parent" android:layout_height="wrap_content" android:hint="@string/description" android:inputType="textAutoCorrect|textCapSentences|textShortMessage" />
+    <com.evancharlton.mileage.views.DividerView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/divider_vehicle_type" />
+    <com.evancharlton.mileage.views.CursorSpinner android:id="@id/type" android:layout_width="fill_parent" android:layout_height="wrap_content" mileage:uri="vehicles/types" mileage:display_field="title" mileage:auto_hide="false" />
+    <CheckBox android:id="@id/make_default" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/set_vehicle_as_default" />
+    <com.evancharlton.mileage.views.DividerView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/divider_vehicle_units" />
+    <Spinner android:entries="@array/distances" android:id="@id/distance" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <Spinner android:entries="@array/volumes" android:id="@id/volume" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <Spinner android:entries="@array/economies" android:id="@id/economy" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <TextView android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/settings_currency_title" android:layout_weight="1.0" />
+        <EditText android:gravity="right" android:id="@id/currency" android:layout_width="wrap_content" android:layout_height="wrap_content" android:ems="3" />
+    </LinearLayout>
+</merge>

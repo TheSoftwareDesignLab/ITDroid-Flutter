@@ -2,6 +2,7 @@ package uniandes.tsdl.itdroid.helper;
 
 
 import java.io.BufferedWriter;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -15,44 +16,86 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.TokenSource;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenSource;
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.v4.runtime.TokenStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.antlr.v4.runtime.tree.Trees ;
+import org.antlr.v4.tool.ast.GrammarAST;
 
-import uniandes.tsdl.antlr.smaliParser;
-import uniandes.tsdl.jflex.smaliFlexLexer;
+import uniandes.tsdl.antlr.*;
 import uniandes.tsdl.smali.LexerErrorInterface;
-
+//import uniandes.tsdl.jflex.smaliFlexLexer;
 public class ASTHelper {
 
-	public static CommonTree getAST(String sourcePath) {
+	public static HashMap<Token,ArrayList<Token>> getAST(String sourcePath) {
 
-		FileInputStream fis = null;
-		File smaliFile = new File(sourcePath);
-		CommonTree t = null;
+		CharStream fis = null;
+		File dartFile = new File(sourcePath);
+		HashMap<Token,ArrayList<Token>> res= null;
 		try {
-			fis = new FileInputStream(smaliFile);
-			InputStreamReader reader = new InputStreamReader(fis, "UTF-8");
+			fis = CharStreams.fromFileName(sourcePath);
+			Dart2Lexer lexer = new Dart2Lexer(fis);
+			TokenStream tokens = (TokenStream) new CommonTokenStream(lexer);
+			Dart2Parser parser = new Dart2Parser(tokens);
 
-			LexerErrorInterface lexer = new smaliFlexLexer(reader);
-			((smaliFlexLexer)lexer).setSourceFile(smaliFile);
-			// System.out.println(((smaliFlexLexer)lexer).nextToken().getText());
-			CommonTokenStream tokens = new CommonTokenStream((TokenSource)lexer);
-			tokens.getTokens();
-			smaliParser parser = new smaliParser(tokens);
-			// parser.setVerboseErrors(options.verboseErrors);
-			// parser.setAllowOdex(options.allowOdexOpcodes);
-			// parser.setApiLevel(options.apiLevel);
 
-			smaliParser.smali_file_return result = parser.smali_file();
-			t = result.getTree();
-			return t;
+			ParseTree result = parser.compilationUnit();
+			Dart2BaseListener listener = new Dart2BaseListener();
+			ParseTreeWalker walker = new ParseTreeWalker();
+			walker.walk(listener, result);
+			ArrayList<Token> methods = listener.getMethods();
+			ArrayList strings = listener.getStrings();
+			System.out.println("entered getAST");
+			res = makeHash(methods,strings);
+			return res;
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-		return t;
+		return res;
+	}
+	private static HashMap<Token,ArrayList<Token>> makeHash(ArrayList<Token> methods, ArrayList strings){
+		HashMap<Token,ArrayList<Token>> hardcoded = new HashMap<Token,ArrayList<Token>>();
+		
+		//Iterator<Token> stringsIter = strings.iterator();
+		try {
+		ArrayList<Token> stringArray = strings;
+		
+		for (int i=0; i< methods.size(); i++) {
+			ArrayList<Token> templist = new ArrayList<>();
+			hardcoded.put((Token) methods.get(i), templist);
+		}
+		for (int i=0; i<methods.size(); i++) {
+			Token currentMethod = (Token) methods.get(i);
+			//Token nextMethod = (Token) methods.get(i+1);
+			
+			for( int j=0; j< stringArray.size(); j++) {
+				//Integer stringLine = stringArray.get(j).getLine();
+				if (currentMethod.getLine() <(stringArray.get(j).getLine())) {
+					if ((i+1)< methods.size()) {
+						if ((methods.get(i+1).getLine()) > stringArray.get(j).getLine()) {
+							hardcoded.get(currentMethod).add(stringArray.get(j));
+							
+						}
+					}else {
+						hardcoded.get(currentMethod).add(stringArray.get(j));
+					}
+				}
+			}
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return hardcoded;
 	}
 
 	public static CommonTree getFirstUncleNamedOfType(int type, String name, CommonTree t) {
@@ -90,9 +133,9 @@ public class ASTHelper {
 		}
 		return null;
 	}
-
+/*
 	public static CommonTree hasIPutAndIGet(CommonTree t) {
-		CommonTree iput = getFirstUncleNamedOfType(smaliParser.I_STATEMENT_FORMAT22c_FIELD, "iput-object", t);
+		CommonTree iput = getFirstUncleNamedOfType(Dart2Parser.I_STATEMENT_FORMAT22c_FIELD, "iput-object", t);
 		if(iput!=null && iput.getLine()-t.getLine()<7)
 		{
 			List<CommonTree> cousins = (List<CommonTree>)iput.getChildren();
@@ -110,7 +153,7 @@ public class ASTHelper {
 		}
 		return null;
 	}
-
+*/
 	public static boolean isValidLocation(CommonTree t){
 		
 		if(t.getType()==smaliParser.I_STATEMENT_FORMAT21c_STRING) {
@@ -131,7 +174,7 @@ public class ASTHelper {
 		
 		return false;
 	}
-
+/*
 	private static boolean isNullOutputStream(CommonTree t) {
 		String apis = "#Ljava/io/OutputStream;"
 				+ "#Ljava/io/ByteArrayOutputStream;"
@@ -197,29 +240,31 @@ public class ASTHelper {
 		}
 		return resp;
 	}
-
+*/
 	public static int findHardCodedStrings(String folderPath, String extrasFolder, String packageName, String outputPath) throws IOException {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath+File.separator+"hcs.txt"));
-		folderPath = folderPath+File.separator+"smali";
+		//folderPath = folderPath+File.separator+"dart";
 		Collection<File> files = FileUtils.listFiles(new File(folderPath), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 		int possibleIPFS = 0;
 		for (File file : files) {
-			if(file.getName().endsWith(".smali") && file.getCanonicalPath().contains(packageName.replace(".", Helper.isWindows()?"\\":"/")) && !file.getName().contains("EmmaInstrumentation") && !file.getName().contains("FinishListener") && !file.getName().contains("InstrumentedActivity") && !file.getName().contains("SMSInstrumentedReceiver")){
-				String fileName = file.getName().replaceAll(".smali", "");
-				HashMap<String, List<String>> list = processFile(file.getAbsolutePath(), folderPath, extrasFolder);
+			if(file.getName().endsWith(".dart") ){
+				String fileName = file.getName().replaceAll(".dart", "");
+				System.out.println("- -- -- -- printing file name");
+				System.out.println(fileName);
+				HashMap<Token, ArrayList<Token>> list = ASTHelper.getAST(file.getAbsolutePath());
 				bw.write(fileName);
 				bw.newLine();
-				Set<String> keys = list.keySet();
-				Iterator<String> keysIter = keys.iterator();
+				Set<Token> keys = list.keySet();
+				Iterator<Token> keysIter = keys.iterator();
 				while(keysIter.hasNext()) {
-					String method = keysIter.next();
-					bw.write("\t"+method);
+					Token method = keysIter.next();
+					bw.write("\t"+method.getText() + " line: " + method.getLine() );
 					bw.newLine();
-					List<String> keyStrings = list.get(method);
+					List<Token> keyStrings = list.get(method);
 					possibleIPFS+=keyStrings.size();
-					for (Iterator<String> iterator = keyStrings.iterator(); iterator.hasNext();) {
-						String hardcodedString = iterator.next();
-						bw.write("\t\t"+hardcodedString);
+					for (Iterator<Token> iterator = keyStrings.iterator(); iterator.hasNext();) {
+						Token hardcodedString = iterator.next();
+						bw.write("\t\t"+hardcodedString.getText() + " line: " + hardcodedString.getLine() );
 						bw.newLine();
 					}
 				}
@@ -229,7 +274,7 @@ public class ASTHelper {
 		bw.close();
 		return possibleIPFS;
 	}
-	
+	/*
 	private static  HashMap<String, List<String>> processFile(String filePath, String projectPath, String extrasFolder){
 
 		HashMap<String, List<String>> stringLocations = new HashMap<>();
@@ -262,7 +307,7 @@ public class ASTHelper {
 
 		return stringLocations;
 	}
-
+*/
 	private static CommonTree getParentOfType(int iMethod, CommonTree b) {
 		CommonTree parent = (CommonTree) b.getParent();
 		while(parent.getType()!=iMethod) {

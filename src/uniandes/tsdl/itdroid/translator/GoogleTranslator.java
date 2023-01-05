@@ -6,4 +6,10 @@ public class GoogleTranslator implements TranslationInterface{
     public void translate(String xmlPath, String inputLang, String outputLang) {
         System.out.println("Translating with Google");
     }
+
+	@Override
+	public void translateFlutter(String[] arbPaths, String inputLang, String outputLang, String baseDir, String prefix) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
